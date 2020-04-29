@@ -59,7 +59,7 @@ function development(program) {
         fs.mkdirSync(pathToTargetServerDirectory, { recursive: true });
         fs.writeFileSync(bundler.pathToServerBuildScript, '');
         displayCommandStep_1.default(cmd, colors_1.default.yellow('Build command to start nodemon for the server...'));
-        const nodemonExecutable = path.resolve(constants_1.PATH_ROOT, 'node_modules', 'nodemon', 'bin', 'nodemon.js');
+        const nodemonExecutable = path.resolve(constants_1.PATH_PROJECT, 'node_modules', 'nodemon', 'bin', 'nodemon.js');
         const nodemonCommand = createCommand_1.default(['node', nodemonExecutable, bundler.pathToServerBuildScript, {
                 port: server.port,
                 watch: bundler.pathToServerBuildScript,
