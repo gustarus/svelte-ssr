@@ -1,1 +1,4 @@
-module.exports = require('./build/server');
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+Object.assign(exports, require('./build/server'));
