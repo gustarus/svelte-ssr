@@ -1,0 +1,57 @@
+{
+  "type": "module",
+  "name": "svelte-server",
+  "version": "0.0.1",
+  "description": "",
+  "main": "./index.js",
+  "scripts": {
+    "watch": "./node_modules/.bin/tsc -w",
+    "build": "rm -rf ./build && ./node_modules/.bin/tsc"
+  },
+  "pre-commit": [
+    "build"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:gustarus/svelte-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gustarus/svelte-server/issues"
+  },
+  "homepage": "https://github.com/gustarus/svelte-server",
+  "bin": {
+    "svelte-server": "./build/cli.js"
+  },
+  "author": "Pavel Kondratenko <iam@kondratenko.me>",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/commander": "^2.12.2",
+    "@types/concurrently": "^5.2.0",
+    "@types/express": "^4.17.6",
+    "@types/fs-extra": "^8.0.1",
+    "@types/http-proxy": "^1.17.4",
+    "@types/lodash.merge": "^4.6.6",
+    "@types/md5": "^2.1.33",
+    "@types/node": "^13.5.0",
+    "@types/yargs": "^15.0.4",
+    "babel-runtime": "^6.26.0",
+    "esm": "^3.2.25",
+    "nodemon": "^2.0.3",
+    "typescript": "^3.7.5",
+    "webpack": "^4.43.0"
+  },
+  "dependencies": {
+    "colors": "^1.4.0",
+    "commander": "^4.1.0",
+    "concurrently": "^5.2.0",
+    "express": "^4.17.1",
+    "fs": "0.0.1-security",
+    "fs-extra": "^8.1.0",
+    "http-proxy": "^1.18.0",
+    "lodash.merge": "^4.6.2",
+    "node-html-parser": "^1.2.16",
+    "path": "^0.12.7",
+    "svelte": "^3.20.1",
+    "yargs": "^15.3.1"
+  }
+}
