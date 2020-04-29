@@ -55,7 +55,7 @@ export default function development(program: Command) {
       fs.writeFileSync(bundler.pathToServerBuildScript, '');
 
       displayCommandStep(cmd, colors.yellow('Build command to start nodemon for the server...'));
-      const nodemonExecutable = path.resolve(PATH_ROOT, 'node_modules', 'nodemon', 'bin', 'nodemon.js');
+      const nodemonExecutable = path.resolve(PATH_PROJECT, 'node_modules', 'nodemon', 'bin', 'nodemon.js');
       const nodemonCommand = createCommand(['node', nodemonExecutable, bundler.pathToServerBuildScript, {
         port: server.port,
         watch: bundler.pathToServerBuildScript,
