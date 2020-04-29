@@ -1,8 +1,8 @@
 {
   "type": "module",
-  "name": "svelte-server",
+  "name": "svelte-ssr",
   "version": "0.0.1",
-  "description": "",
+  "description": "Tool to setup svelte server side rendering with webpack",
   "main": "./index.js",
   "scripts": {
     "watch": "./node_modules/.bin/tsc -w",
@@ -13,14 +13,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:gustarus/svelte-server.git"
+    "url": "git+ssh://git@github.com:gustarus/svelte-ssr.git"
   },
   "bugs": {
-    "url": "https://github.com/gustarus/svelte-server/issues"
+    "url": "https://github.com/gustarus/svelte-ssr/issues"
   },
-  "homepage": "https://github.com/gustarus/svelte-server",
+  "homepage": "https://github.com/gustarus/svelte-ssr",
   "bin": {
-    "svelte-server": "./build/cli.js"
+    "svelte-ssr": "./build/cli.js"
   },
   "author": "Pavel Kondratenko <iam@kondratenko.me>",
   "license": "ISC",
