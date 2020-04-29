@@ -1,2 +1,2 @@
-import WebpackBundler from '../bundlers/WebpackBundler';
-export default function resolveBundlerByCode(code: string): typeof WebpackBundler;
+import { TBundlers } from '../types/TBundlers';
+export default function resolveBundlerByCode(code: keyof TBundlers): TBundlers[typeof code];

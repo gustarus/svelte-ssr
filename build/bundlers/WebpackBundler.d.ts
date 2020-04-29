@@ -1,17 +1,10 @@
-import BaseBundler, { BaseBundlerSpace } from './BaseBundler';
+import BaseBundler from './BaseBundler';
 import Command from '../models/Command';
 export declare namespace WebpackBundlerSpace {
     type Config = {};
 }
 export default class WebpackBundler extends BaseBundler<WebpackBundlerSpace.Config> {
-    get defaults(): {
-        mode: BaseBundlerSpace.Modes;
-        pathToProject: string;
-        pathToClientConfig: string;
-        pathToServerConfig: string;
-        serverPortClient: string;
-        serverPortServer: string;
-    };
+    get defaults(): any;
     protected get pathToWebpackServerExecutable(): string;
     protected get pathToWebpackExecutable(): string;
     resolveConfig(pathToConfig: string, name: string): any;

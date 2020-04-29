@@ -39,7 +39,7 @@ const mock: TPreloadCallback = async function () {
  *  }
  * @param options
  */
-export default function createRenderMiddleware(options: { component: TSvelteServerSideComponent; preload?: TPreloadCallback, pathToTemplate: string, target: string; }): (req: Request, res: Response, next: NextFunction) => void {
+export default function createRenderMiddleware(options: { base?: string; component: TSvelteServerSideComponent; preload?: TPreloadCallback, pathToTemplate: string, target: string; }): (req: Request, res: Response, next: NextFunction) => void {
   const { component, preload, pathToTemplate, target } = options;
 
   if (!component) {

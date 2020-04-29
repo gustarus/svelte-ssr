@@ -5,21 +5,22 @@ export declare namespace BaseBundlerSpace {
     type Config = {
         mode: Modes;
         pathToProject: string;
-        pathToClientConfig: string;
-        pathToServerConfig: string;
-        serverPortClient: string;
-        serverPortServer: string;
+        pathToClientConfig?: string;
+        pathToServerConfig?: string;
+        developmentPortClient?: string;
+        developmentPortServer?: string;
     };
 }
-export default abstract class BaseBundler<C> extends Component<BaseBundlerSpace.Config & C> {
+export default abstract class BaseBundler<C = {}> extends Component<BaseBundlerSpace.Config & C> {
     mode: BaseBundlerSpace.Modes;
     private _pathToProject;
     private _pathToClientConfig;
     private _pathToServerConfig;
-    serverPortClient?: string;
-    serverPortServer?: string;
+    developmentPortClient?: string;
+    developmentPortServer?: string;
     private _configClient;
     private _configServer;
+    get defaults(): any;
     set pathToProject(value: string);
     get pathToProject(): string;
     set pathToClientConfig(value: string);
@@ -40,9 +41,7 @@ export default abstract class BaseBundler<C> extends Component<BaseBundlerSpace.
     get bundlerCommandClientBuild(): Command;
     get bundlerCommandServerStart(): Command;
     get bundlerCommandServerBuild(): Command;
-    protected configure(custom?: {
-        [key: string]: any;
-    }): this;
+    protected configure(custom?: Partial<BaseBundlerSpace.Config & C>): this;
     protected abstract resolveConfig(pathToConfig: string, name: string): any;
     protected abstract resolvePathToSource(pathToConfig: string, name: string, config: any): string;
     protected abstract resolvePathToSourceEntry(pathToConfig: string, name: string, config: any): string;

@@ -16,8 +16,9 @@ class Component extends Model_1.default {
         // merge configuration with filter by undefined
         const config = this.defaults;
         for (const name in custom) {
-            config[name] = typeof custom[name] !== 'undefined'
-                ? custom[name] : config[name];
+            if (typeof custom[name] !== 'undefined') {
+                config[name] = custom[name];
+            }
         }
         // pass configuration to the instance
         for (const name in config) {

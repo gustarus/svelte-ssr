@@ -3,5 +3,5 @@ Allows to run development and production modes for server side rendering svelte 
 
 # TODO
 - [x] Implement development mode.
-- [ ] Implement production mode.
+- [x] Implement production mode.
 - [ ] Fill the documentation.

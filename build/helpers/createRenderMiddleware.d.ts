@@ -30,6 +30,7 @@ declare type TPreloadCallback = (location: TRequestedLocation) => Promise<{
  * @param options
  */
 export default function createRenderMiddleware(options: {
+    base?: string;
     component: TSvelteServerSideComponent;
     preload?: TPreloadCallback;
     pathToTemplate: string;

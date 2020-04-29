@@ -9,14 +9,11 @@ export namespace WebpackBundlerSpace {
 
 export default class WebpackBundler extends BaseBundler<WebpackBundlerSpace.Config> {
 
-  public get defaults() {
+  public get defaults(): any {
     return {
-      mode: 'development' as BaseBundlerSpace.Modes,
-      pathToProject: '',
+      ...super.defaults,
       pathToClientConfig: 'webpack.config.client.js',
       pathToServerConfig: 'webpack.config.server.js',
-      serverPortClient: '8080',
-      serverPortServer: '8081',
     };
   }
 

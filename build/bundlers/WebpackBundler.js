@@ -16,12 +16,9 @@ const createCommand_1 = __importDefault(require("../helpers/createCommand"));
 class WebpackBundler extends BaseBundler_1.default {
     get defaults() {
         return {
-            mode: 'development',
-            pathToProject: '',
+            ...super.defaults,
             pathToClientConfig: 'webpack.config.client.js',
             pathToServerConfig: 'webpack.config.server.js',
-            serverPortClient: '8080',
-            serverPortServer: '8081',
         };
     }
     get pathToWebpackServerExecutable() {

@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const path = __importStar(require("path"));
 const commander_1 = __importDefault(require("commander"));
+const build_1 = __importDefault(require("./cli/build"));
 const development_1 = __importDefault(require("./cli/development"));
 const production_1 = __importDefault(require("./cli/production"));
 const constants_1 = require("./constants");
@@ -24,6 +25,7 @@ commander_1.default
     .version(that.version)
     .description('Tool to generate svelte documentation');
 // bind commands
+build_1.default(commander_1.default);
 development_1.default(commander_1.default);
 production_1.default(commander_1.default);
 // parse arguments

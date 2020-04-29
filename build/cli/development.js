@@ -15,47 +15,44 @@ const path = __importStar(require("path"));
 const colors_1 = __importDefault(require("colors"));
 const constants_1 = require("../constants");
 const concurrently_1 = __importDefault(require("concurrently"));
+const createCommand_1 = __importDefault(require("../helpers/createCommand"));
 const displayCommandGreetings_1 = __importDefault(require("../helpers/displayCommandGreetings"));
 const displayCommandStep_1 = __importDefault(require("../helpers/displayCommandStep"));
-const resolveBundlerByCode_1 = __importDefault(require("../helpers/resolveBundlerByCode"));
-const createCommand_1 = __importDefault(require("../helpers/createCommand"));
-const resolveAvailablePort_1 = __importDefault(require("../helpers/resolveAvailablePort"));
+const resolveCommandConfigurations_1 = __importDefault(require("../helpers/resolveCommandConfigurations"));
+const resolveCommandPorts_1 = __importDefault(require("../helpers/resolveCommandPorts"));
+const resolveCommandBundler_1 = __importDefault(require("../helpers/resolveCommandBundler"));
+const displayCommandEnvironment_1 = __importDefault(require("../helpers/displayCommandEnvironment"));
+const Server_1 = __importDefault(require("../models/Server"));
 function development(program) {
     program
         .command('development')
-        .description('Generate documentation library from components')
-        .requiredOption('-b, --bundler <webpack>', 'Which tool to use to bundle assets (only webpack is supported right now)')
-        .option('-p --node-port <3000>', 'Port to listen for server side rendering server', '3000')
-        .option('-c, --client-config <config.client.js>', 'Path to bundler tool client config')
-        .option('--client-port <8080>', 'Port to listen for client bundler', '8080')
-        .option('-s --server-config <config.server.js>', 'Path to bundler tool server config')
-        .option('--server-port <8081>', 'Port to listen for server bundler', '8081')
+        .description('Launch client and server development servers and node server to serve server side rendering')
+        .requiredOption(constants_1.DEFAULT_OPTIONS.bundler.flag, constants_1.DEFAULT_OPTIONS.bundler.description, constants_1.DEFAULT_OPTIONS.bundler.defaultValue)
+        .option(constants_1.DEFAULT_OPTIONS.nodePort.flag, constants_1.DEFAULT_OPTIONS.nodePort.description, constants_1.DEFAULT_OPTIONS.nodePort.defaultValue)
+        .option(constants_1.DEFAULT_OPTIONS.clientConfig.flag, constants_1.DEFAULT_OPTIONS.clientConfig.description, constants_1.DEFAULT_OPTIONS.clientConfig.defaultValue)
+        .option(constants_1.DEFAULT_OPTIONS.clientPort.flag, constants_1.DEFAULT_OPTIONS.clientPort.description, constants_1.DEFAULT_OPTIONS.clientPort.defaultValue)
+        .option(constants_1.DEFAULT_OPTIONS.serverConfig.flag, constants_1.DEFAULT_OPTIONS.serverConfig.description, constants_1.DEFAULT_OPTIONS.serverConfig.defaultValue)
+        .option(constants_1.DEFAULT_OPTIONS.serverPort.flag, constants_1.DEFAULT_OPTIONS.serverPort.description, constants_1.DEFAULT_OPTIONS.serverPort.defaultValue)
         .action(async (cmd) => {
         displayCommandGreetings_1.default(cmd);
-        displayCommandStep_1.default(cmd, colors_1.default.blue.bold('Launch client and server development servers'));
-        displayCommandStep_1.default(cmd, colors_1.default.yellow(`Resolve bundler with code '${cmd.bundler}' from collection...`));
-        const Bundler = resolveBundlerByCode_1.default(cmd.bundler);
-        displayCommandStep_1.default(cmd, colors_1.default.yellow('Resolve available ports to launch the tool...'));
-        const nodePort = await resolveAvailablePort_1.default(cmd.nodePort);
-        const clientPort = await resolveAvailablePort_1.default(cmd.clientPort);
-        const serverPort = await resolveAvailablePort_1.default(cmd.serverPort);
-        displayCommandStep_1.default(cmd, colors_1.default.yellow('Create bundler instance with passed options...'));
+        const ports = await resolveCommandPorts_1.default(cmd);
+        const Bundler = await resolveCommandBundler_1.default(cmd);
+        const configurations = await resolveCommandConfigurations_1.default(cmd);
+        displayCommandStep_1.default(cmd, colors_1.default.yellow('Create server instance with resolved options...'));
+        const server = new Server_1.default({
+            port: ports.node,
+        });
+        displayCommandStep_1.default(cmd, colors_1.default.yellow('Create bundler instance with resolved options...'));
         const bundler = new Bundler({
             mode: 'development',
             pathToProject: constants_1.PATH_PROJECT,
-            pathToClientConfig: cmd.clientConfig,
-            pathToServerConfig: cmd.serverConfig,
-            serverPortClient: clientPort.available,
-            serverPortServer: serverPort.available,
+            pathToClientConfig: configurations.client,
+            pathToServerConfig: configurations.server,
+            developmentPortClient: ports.client,
+            developmentPortServer: ports.server,
         });
-        displayCommandStep_1.default(cmd, colors_1.default.blue('The tool will be started with the following options'));
-        displayCommandStep_1.default(cmd, `\tBundler mode: ${colors_1.default.bold(bundler.mode)}`);
-        displayCommandStep_1.default(cmd, `\tNode listen to port: ${colors_1.default.bold(nodePort.available)}`);
-        displayCommandStep_1.default(cmd, `\tClient bundler listen to port: ${colors_1.default.bold(clientPort.available)}`);
-        displayCommandStep_1.default(cmd, `\tServer bundler listen to port: ${colors_1.default.bold(serverPort.available)}`);
-        displayCommandStep_1.default(cmd, `\tPath to project to build: ${colors_1.default.italic(bundler.pathToProject)}`);
-        displayCommandStep_1.default(cmd, `\tPath to bundler client config: ${colors_1.default.italic(bundler.pathToClientConfig)}`);
-        displayCommandStep_1.default(cmd, `\tPath to bundler server config: ${colors_1.default.italic(bundler.pathToServerConfig)}`);
+        // display command environment options
+        displayCommandEnvironment_1.default(cmd, server, bundler);
         displayCommandStep_1.default(cmd, colors_1.default.yellow('Create empty server file for nodemon watcher...'));
         displayCommandStep_1.default(cmd, `\tFile will be created inside ${colors_1.default.italic(bundler.pathToServerBuildScript)}`);
         const pathToTargetServerDirectory = path.dirname(bundler.pathToServerBuildScript);
@@ -64,9 +61,10 @@ function development(program) {
         displayCommandStep_1.default(cmd, colors_1.default.yellow('Build command to start nodemon for the server...'));
         const nodemonExecutable = path.resolve(constants_1.PATH_ROOT, 'node_modules', 'nodemon', 'bin', 'nodemon.js');
         const nodemonCommand = createCommand_1.default(['node', nodemonExecutable, bundler.pathToServerBuildScript, {
-                port: nodePort.available,
+                port: server.port,
                 watch: bundler.pathToServerBuildScript,
-                staticProxyPort: clientPort.available,
+                staticProxyPort: ports.client,
+                staticPathToDirectory: bundler.pathToClientBuild,
             }]);
         displayCommandStep_1.default(cmd, colors_1.default.yellow('Concurrently start node js server, server webpack and client webpack...'));
         return concurrently_1.default([

@@ -2,24 +2,41 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const yargs_1 = __importDefault(require("yargs"));
+const path = __importStar(require("path"));
 const http_proxy_1 = __importDefault(require("http-proxy"));
+const resolveNormalizedPath_1 = __importDefault(require("./resolveNormalizedPath"));
 // extract process arguments
-const { staticProxyPort } = yargs_1.default.argv;
+const { staticProxyPort, staticPathToDirectory } = yargs_1.default.argv;
 /**
  * Create middleware to serve static files.
  * If there is a client development server running we are using proxy to serve files.
  * Client development server port will be taken from node js server launch arguments.
  */
-function createStaticMiddleware() {
+function createStaticMiddleware(options = {}) {
+    // resolve base folder into like '/base/'
+    const base = resolveNormalizedPath_1.default(options.base || '/');
     let staticProxy;
     if (staticProxyPort) {
         // create static assets proxy service to resolve assets from client development server
-        console.log(`Serve static files from client process running on port ${staticProxyPort}`);
+        console.log(`Serve static files from client process running on port ':${staticProxyPort}'`);
         staticProxy = http_proxy_1.default.createProxyServer({
             target: `http://localhost:${staticProxyPort}`,
         });
+    }
+    else if (staticPathToDirectory) {
+        console.log(`Serve static files from folder '${staticPathToDirectory}'`);
+    }
+    else {
+        throw new Error('Unable to resolve command argument \'staticPathToDirectory\' which is required to serve static files');
     }
     return (req, res, next) => {
         // if request is a path to file
@@ -28,10 +45,17 @@ function createStaticMiddleware() {
         }
         // if file should be served from the client development server
         if (staticProxy) {
+            // TODO Enable in debug mode.
+            // console.log(`Serve static file '${req.path}' from proxy`);
             staticProxy.web(req, res);
             return;
         }
-        res.contentType(req.path).sendFile(req.path);
+        // '/base/name.extension' -> 'name.extension'
+        // TODO Enable in debug mode.
+        // console.log(`Serve static file '${req.path}' from folder`);
+        const pathToFileRelative = req.path.slice(base.length);
+        const pathToFileAbsolute = path.resolve(staticPathToDirectory, pathToFileRelative);
+        res.contentType(path.basename(pathToFileAbsolute)).sendFile(pathToFileAbsolute);
     };
 }
 exports.default = createStaticMiddleware;

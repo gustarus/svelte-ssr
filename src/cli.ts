@@ -2,6 +2,7 @@
 
 import * as path from 'path';
 import program from 'commander';
+import build from './cli/build';
 import development from './cli/development';
 import production from './cli/production';
 import { PATH_ROOT } from './constants';
@@ -16,6 +17,7 @@ program
   .description('Tool to generate svelte documentation');
 
 // bind commands
+build(program);
 development(program);
 production(program);
 

@@ -11,14 +11,14 @@ export namespace BaseBundlerSpace {
   export type Config = {
     mode: Modes;
     pathToProject: string;
-    pathToClientConfig: string;
-    pathToServerConfig: string;
-    serverPortClient: string;
-    serverPortServer: string;
+    pathToClientConfig?: string;
+    pathToServerConfig?: string;
+    developmentPortClient?: string;
+    developmentPortServer?: string;
   };
 }
 
-export default abstract class BaseBundler<C> extends Component<BaseBundlerSpace.Config & C> {
+export default abstract class BaseBundler<C = {}> extends Component<BaseBundlerSpace.Config & C> {
 
   public mode: BaseBundlerSpace.Modes;
 
@@ -28,13 +28,21 @@ export default abstract class BaseBundler<C> extends Component<BaseBundlerSpace.
 
   private _pathToServerConfig: string;
 
-  public serverPortClient?: string;
+  public developmentPortClient?: string;
 
-  public serverPortServer?: string;
+  public developmentPortServer?: string;
 
   private _configClient: any;
 
   private _configServer: any;
+
+  public get defaults(): any {
+    return {
+      mode: 'development' as BaseBundlerSpace.Modes,
+      developmentPortClient: '8080',
+      developmentPortServer: '8081',
+    };
+  }
 
   public set pathToProject(value: string) {
     this._pathToProject = value && path.resolve(value);
@@ -117,7 +125,7 @@ export default abstract class BaseBundler<C> extends Component<BaseBundlerSpace.
   }
 
   public get bundlerCommandClientStart(): Command {
-    return this.resolveBundlerCommandServer(this.pathToClientConfig, this.serverPortClient);
+    return this.resolveBundlerCommandServer(this.pathToClientConfig, this.developmentPortClient);
   }
 
   public get bundlerCommandClientBuild(): Command {
@@ -125,17 +133,20 @@ export default abstract class BaseBundler<C> extends Component<BaseBundlerSpace.
   }
 
   public get bundlerCommandServerStart(): Command {
-    return this.resolveBundlerCommandServer(this.pathToServerConfig, this.serverPortServer);
+    return this.resolveBundlerCommandServer(this.pathToServerConfig, this.developmentPortServer);
   }
 
   public get bundlerCommandServerBuild(): Command {
     return this.resolveBundlerCommandBuild(this.pathToServerConfig);
   }
 
-  protected configure(custom: { [key: string]: any } = {}): this {
+  protected configure(custom: Partial<BaseBundlerSpace.Config & C> = {}): this {
     // we have to assign path to root firstly
-    const { pathToRoot, ...rest } = custom;
-    this.pathToProject = pathToRoot || this.pathToProject;
+    const { pathToProject, ...rest } = custom;
+    if (pathToProject) {
+      this.pathToProject = pathToProject;
+    }
+
     return super.configure(rest);
   }
 

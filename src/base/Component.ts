@@ -9,16 +9,17 @@ export default class Component<C> extends Model {
     this.configure(config);
   }
 
-  public get defaults(): C {
-    return {} as C;
+  public get defaults(): Partial<C> {
+    return {} as any;
   }
 
   protected configure(custom: { [key: string]: any } = {}): this {
     // merge configuration with filter by undefined
-    const config: C = this.defaults;
+    const config: C = this.defaults as C;
     for (const name in custom) {
-      (config as any)[name] = typeof custom[name] !== 'undefined'
-        ? custom[name] : (config as any)[name];
+      if (typeof custom[name] !== 'undefined') {
+        (config as any)[name] = custom[name];
+      }
     }
 
     // pass configuration to the instance

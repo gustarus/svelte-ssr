@@ -16,6 +16,13 @@ const colors_1 = __importDefault(require("colors"));
 const fs = __importStar(require("fs-extra"));
 const constants_1 = require("../constants");
 class BaseBundler extends Component_1.default {
+    get defaults() {
+        return {
+            mode: 'development',
+            developmentPortClient: '8080',
+            developmentPortServer: '8081',
+        };
+    }
     set pathToProject(value) {
         this._pathToProject = value && path.resolve(value);
     }
@@ -79,21 +86,23 @@ class BaseBundler extends Component_1.default {
         return this.resolvePathToBuildEntry(this.pathToServerConfig, constants_1.ENTRY_SERVER, this.configServer);
     }
     get bundlerCommandClientStart() {
-        return this.resolveBundlerCommandServer(this.pathToClientConfig, this.serverPortClient);
+        return this.resolveBundlerCommandServer(this.pathToClientConfig, this.developmentPortClient);
     }
     get bundlerCommandClientBuild() {
         return this.resolveBundlerCommandBuild(this.pathToClientConfig);
     }
     get bundlerCommandServerStart() {
-        return this.resolveBundlerCommandServer(this.pathToServerConfig, this.serverPortServer);
+        return this.resolveBundlerCommandServer(this.pathToServerConfig, this.developmentPortServer);
     }
     get bundlerCommandServerBuild() {
         return this.resolveBundlerCommandBuild(this.pathToServerConfig);
     }
     configure(custom = {}) {
         // we have to assign path to root firstly
-        const { pathToRoot, ...rest } = custom;
-        this.pathToProject = pathToRoot || this.pathToProject;
+        const { pathToProject, ...rest } = custom;
+        if (pathToProject) {
+            this.pathToProject = pathToProject;
+        }
         return super.configure(rest);
     }
     validatePathToConfig(pathToConfig, name) {
