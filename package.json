@@ -1,16 +1,17 @@
 {
   "type": "module",
   "name": "svelte-ssr",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Tool to setup svelte server side rendering with webpack",
   "main": "./index.js",
   "scripts": {
     "watch": "./node_modules/.bin/tsc -w",
-    "build": "rm -rf ./build && ./node_modules/.bin/tsc"
+    "build": "npm run build:core && npm run build:client && npm run build:server && npm run build:webpack",
+    "build:core": "rm -rf ./build && ./node_modules/.bin/tsc",
+    "build:client": "node ./build/export.js --source ./build/client.js --target ./client.js",
+    "build:server": "node ./build/export.js --source ./build/server.js --target ./server.js",
+    "build:webpack": "node ./build/export.js --source ./build/webpack.js --target ./webpack.js"
   },
-  "pre-commit": [
-    "build"
-  ],
   "repository": {
     "type": "git",
     "url": "git+ssh://git@github.com:gustarus/svelte-ssr.git"
