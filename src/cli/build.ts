@@ -21,14 +21,8 @@ export default function development(program: Command) {
     .option(DEFAULT_OPTIONS.serverConfig.flag, DEFAULT_OPTIONS.serverConfig.description, DEFAULT_OPTIONS.serverConfig.defaultValue)
     .action(async(cmd: TDefaultCommand) => {
       displayCommandGreetings(cmd);
-      const ports = await resolveCommandPorts(cmd);
       const Bundler = await resolveCommandBundler(cmd);
       const configurations = await resolveCommandConfigurations(cmd);
-
-      displayCommandStep(cmd, colors.yellow('Create server instance with resolved options...'));
-      const server = new Server({
-        port: ports.node,
-      });
 
       displayCommandStep(cmd, colors.yellow('Create bundler instance with resolved options...'));
       const bundler = new Bundler({
@@ -39,7 +33,7 @@ export default function development(program: Command) {
       });
 
       // display command environment options
-      displayCommandEnvironment(cmd, server, bundler);
+      displayCommandEnvironment(cmd, undefined, bundler);
 
       displayCommandStep(cmd, colors.yellow('Build client entry point...'));
       execSyncProgressDisplay(bundler.bundlerCommandClientBuild.compile());
