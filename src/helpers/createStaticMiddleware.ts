@@ -1,8 +1,7 @@
 import yargs from 'yargs';
-import * as path from 'path';
+import path from 'path';
 import { NextFunction, Request, Response } from 'express';
 import httpProxy from 'http-proxy';
-import Server = require('http-proxy');
 import resolveLocationNormalizedPath from './resolveNormalizedPath';
 
 // extract process arguments
@@ -17,7 +16,7 @@ export default function createStaticMiddleware(options: { base?: string } = {}):
   // resolve base folder into like '/base/'
   const base = resolveLocationNormalizedPath(options.base || '/');
 
-  let staticProxy: Server | undefined;
+  let staticProxy: httpProxy | undefined;
   if (staticProxyPort) {
     // create static assets proxy service to resolve assets from client development server
     console.log(`Serve static files from client process running on port ':${staticProxyPort}'`);

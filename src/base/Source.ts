@@ -1,6 +1,6 @@
-import * as path from 'path';
+import path from 'path';
 import Component from './Component';
-import * as fs from 'fs';
+import fs from 'fs';
 
 export namespace SourceSpace {
   export type Config = {

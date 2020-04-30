@@ -1,5 +1,5 @@
 import * as fs from 'fs-extra';
-import * as path from 'path';
+import path from 'path';
 import colors from 'colors';
 import { PATH_ROOT, PATH_PROJECT, DEFAULT_OPTIONS } from '../constants';
 import concurrently from 'concurrently';

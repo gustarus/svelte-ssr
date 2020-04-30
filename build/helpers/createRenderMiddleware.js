@@ -1,16 +1,23 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const fs = __importStar(require("fs"));
-const node_html_parser_1 = require("node-html-parser");
-const mock = async function () {
-    return {};
+const fs_1 = __importDefault(require("fs"));
+const node_html_parser_1 = __importDefault(require("node-html-parser"));
+const mock = function () {
+    return __awaiter(this, void 0, void 0, function* () {
+        return {};
+    });
 };
 /**
  * Create middleware to render application from template with desired options.
@@ -42,14 +49,16 @@ function createRenderMiddleware(options) {
      */
     function resolveTemplateRepresentative() {
         if (!original.dom || !clone.dom) {
-            if (!fs.existsSync(pathToTemplate)) {
+            if (!fs_1.default.existsSync(pathToTemplate)) {
                 throw new Error(`Unable to find file for the template: looking for '${pathToTemplate}'`);
             }
             // read the template from the file
-            const template = fs.readFileSync(pathToTemplate).toString();
+            const template = fs_1.default.readFileSync(pathToTemplate).toString();
             // parse template into dom
-            original.dom = node_html_parser_1.parse(template);
-            clone.dom = node_html_parser_1.parse(template);
+            // @ts-ignore
+            original.dom = node_html_parser_1.default.parse(template);
+            // @ts-ignore
+            clone.dom = node_html_parser_1.default.parse(template);
             // resolve head
             original.head = original.dom.querySelector('head');
             clone.head = clone.dom.querySelector('head');
@@ -75,7 +84,7 @@ function createRenderMiddleware(options) {
         const processor = preload || mock;
         processor(location).then((data) => {
             // render application with loaded data
-            const props = { ...location, ...data };
+            const props = Object.assign(Object.assign({}, location), data);
             const { head, html } = component.render(props);
             // set clone content from original one with rendered one
             const propsScript = `<script type="text/javascript">window.$$props = ${JSON.stringify(props)};</script>`;

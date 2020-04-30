@@ -1,15 +1,22 @@
 {
   "compilerOptions": {
-    "target": "esnext",
+    "target": "es6",
     "module": "commonjs",
+    "moduleResolution": "node",
     "declaration": true,
     "rootDir": "src",
     "outDir": "build",
     "strict": true,
+    "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
     "strictPropertyInitialization": false,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "lib": [
+      "esnext",
+      "dom"
+    ]
   },
   "include": [
     "src/**/*"

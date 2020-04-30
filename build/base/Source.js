@@ -1,28 +1,21 @@
 "use strict";
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const path = __importStar(require("path"));
+const path_1 = __importDefault(require("path"));
 const Component_1 = __importDefault(require("./Component"));
-const fs = __importStar(require("fs"));
+const fs_1 = __importDefault(require("fs"));
 class Source extends Component_1.default {
     set path(value) {
-        this._path = path.resolve(value);
+        this._path = path_1.default.resolve(value);
     }
     get path() {
         return this._path;
     }
     get source() {
         if (!this._source) {
-            this._source = fs.readFileSync(this.path).toString();
+            this._source = fs_1.default.readFileSync(this.path).toString();
         }
         return this._source;
     }
@@ -31,7 +24,7 @@ class Source extends Component_1.default {
         this.save();
     }
     save() {
-        fs.writeFileSync(this.path, this.source);
+        fs_1.default.writeFileSync(this.path, this.source);
         this.reset();
     }
     reset() {

@@ -1,16 +1,22 @@
 {
   "type": "module",
   "name": "svelte-ssr",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Tool to setup svelte server side rendering with webpack",
   "main": "./index.js",
   "scripts": {
     "watch": "./node_modules/.bin/tsc -w",
-    "build": "npm run build:core && npm run build:client && npm run build:server && npm run build:webpack",
-    "build:core": "rm -rf ./build && ./node_modules/.bin/tsc",
-    "build:client": "node ./build/export.js --source ./build/client.js --target ./client.js",
-    "build:server": "node ./build/export.js --source ./build/server.js --target ./server.js",
-    "build:webpack": "node ./build/export.js --source ./build/webpack.js --target ./webpack.js"
+    "build": "rm -rf ./build && npm run build:mjs && npm run build:cjs",
+    "build:cjs": "npm run build:cjs:core && npm run build:cjs:client && npm run build:cjs:server && npm run build:cjs:webpack",
+    "build:cjs:core": "./node_modules/.bin/tsc -m commonjs",
+    "build:cjs:client": "node ./build/export.js --source ./build/client.js --target ./client.js",
+    "build:cjs:server": "node ./build/export.js --source ./build/server.js --target ./server.js",
+    "build:cjs:webpack": "node ./build/export.js --source ./build/webpack.js --target ./webpack.js",
+    "build:mjs": "npm run build:mjs:core && npm run build:mjs:client && npm run build:mjs:server && npm run build:mjs:webpack",
+    "build:mjs:core": "./node_modules/.bin/tsc -m esnext && find ./build -depth -exec rename 's/\\.js/\\.mjs/' {} +",
+    "build:mjs:client": "node --experimental-modules ./build/export.mjs --source ./build/client.mjs --target ./client.mjs",
+    "build:mjs:server": "node --experimental-modules ./build/export.mjs --source ./build/server.mjs --target ./server.mjs",
+    "build:mjs:webpack": "node --experimental-modules ./build/export.mjs --source ./build/webpack.mjs --target ./webpack.mjs"
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,6 @@
-import * as fs from 'fs';
+import fs from 'fs';
 import { NextFunction, Request, Response } from 'express';
-import { parse, HTMLElement } from 'node-html-parser';
+import parser, { HTMLElement } from 'node-html-parser';
 
 type TTemplateRepresentative = {
   dom: HTMLElement;
@@ -72,8 +72,10 @@ export default function createRenderMiddleware(options: { base?: string; compone
       const template = fs.readFileSync(pathToTemplate).toString();
 
       // parse template into dom
-      original.dom = parse(template) as HTMLElement;
-      clone.dom = parse(template) as HTMLElement;
+      // @ts-ignore
+      original.dom = parser.parse(template) as HTMLElement;
+      // @ts-ignore
+      clone.dom = parser.parse(template) as HTMLElement;
 
       // resolve head
       original.head = original.dom.querySelector('head');

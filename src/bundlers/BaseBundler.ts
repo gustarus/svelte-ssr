@@ -1,5 +1,5 @@
 import Component from '../base/Component';
-import * as path from 'path';
+import path from 'path';
 import colors from 'colors';
 import * as fs from 'fs-extra';
 import { ENTRY_CLIENT, ENTRY_SERVER } from '../constants';

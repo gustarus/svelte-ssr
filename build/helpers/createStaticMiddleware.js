@@ -2,16 +2,9 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const yargs_1 = __importDefault(require("yargs"));
-const path = __importStar(require("path"));
+const path_1 = __importDefault(require("path"));
 const http_proxy_1 = __importDefault(require("http-proxy"));
 const resolveNormalizedPath_1 = __importDefault(require("./resolveNormalizedPath"));
 // extract process arguments
@@ -54,8 +47,8 @@ function createStaticMiddleware(options = {}) {
         // TODO Enable in debug mode.
         // console.log(`Serve static file '${req.path}' from folder`);
         const pathToFileRelative = req.path.slice(base.length);
-        const pathToFileAbsolute = path.resolve(staticPathToDirectory, pathToFileRelative);
-        res.contentType(path.basename(pathToFileAbsolute)).sendFile(pathToFileAbsolute);
+        const pathToFileAbsolute = path_1.default.resolve(staticPathToDirectory, pathToFileRelative);
+        res.contentType(path_1.default.basename(pathToFileAbsolute)).sendFile(pathToFileAbsolute);
     };
 }
 exports.default = createStaticMiddleware;

@@ -1,5 +1,5 @@
 import { execSync } from 'child_process';
-import colors from 'colors/safe';
+import colors from 'colors';
 import createCommand from './createCommand';
 import { CommandSpace } from '../models/Command';
 

@@ -1,4 +1,4 @@
-import * as path from 'path';
+import path from 'path';
 import yargs from 'yargs';
 import merge from 'lodash.merge';
 import { WebpackOptions } from 'webpack/declarations/WebpackOptions';
@@ -24,11 +24,6 @@ export default function createWebpackClientConfig(source: WebpackOptions, option
     },
 
     target: 'web',
-
-    node: {
-      __dirname: true,
-      __filename: true,
-    },
 
     output: {
       path: path.resolve(PATH_PROJECT, 'build', 'client'),

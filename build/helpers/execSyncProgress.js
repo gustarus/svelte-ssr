@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const child_process_1 = require("child_process");
-const safe_1 = __importDefault(require("colors/safe"));
+const colors_1 = __importDefault(require("colors"));
 const createCommand_1 = __importDefault(require("./createCommand"));
 function execSyncProgress(parts, scenario) {
     const command = createCommand_1.default(parts);
@@ -21,7 +21,7 @@ function execSyncProgress(parts, scenario) {
         }
     }
     catch (error) {
-        console.log(safe_1.default.red(error.stack));
+        console.log(colors_1.default.red(error.stack));
         process.exit(1);
         return false;
     }

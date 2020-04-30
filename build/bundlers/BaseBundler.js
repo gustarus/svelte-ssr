@@ -1,4 +1,15 @@
 "use strict";
+var __rest = (this && this.__rest) || function (s, e) {
+    var t = {};
+    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
+        t[p] = s[p];
+    if (s != null && typeof Object.getOwnPropertySymbols === "function")
+        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
+            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
+                t[p[i]] = s[p[i]];
+        }
+    return t;
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -11,7 +22,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Component_1 = __importDefault(require("../base/Component"));
-const path = __importStar(require("path"));
+const path_1 = __importDefault(require("path"));
 const colors_1 = __importDefault(require("colors"));
 const fs = __importStar(require("fs-extra"));
 const constants_1 = require("../constants");
@@ -24,13 +35,13 @@ class BaseBundler extends Component_1.default {
         };
     }
     set pathToProject(value) {
-        this._pathToProject = value && path.resolve(value);
+        this._pathToProject = value && path_1.default.resolve(value);
     }
     get pathToProject() {
         return this._pathToProject;
     }
     set pathToClientConfig(value) {
-        const resolved = value && path.resolve(this.pathToProject, value);
+        const resolved = value && path_1.default.resolve(this.pathToProject, value);
         if (this.validatePathToConfig(resolved, constants_1.ENTRY_CLIENT)) {
             this._pathToClientConfig = resolved;
         }
@@ -39,7 +50,7 @@ class BaseBundler extends Component_1.default {
         return this._pathToClientConfig;
     }
     set pathToServerConfig(value) {
-        const resolved = value && path.resolve(this.pathToProject, value);
+        const resolved = value && path_1.default.resolve(this.pathToProject, value);
         if (this.validatePathToConfig(resolved, constants_1.ENTRY_SERVER)) {
             this._pathToServerConfig = resolved;
         }
@@ -99,7 +110,7 @@ class BaseBundler extends Component_1.default {
     }
     configure(custom = {}) {
         // we have to assign path to root firstly
-        const { pathToProject, ...rest } = custom;
+        const { pathToProject } = custom, rest = __rest(custom, ["pathToProject"]);
         if (pathToProject) {
             this.pathToProject = pathToProject;
         }

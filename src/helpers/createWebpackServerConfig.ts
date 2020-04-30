@@ -1,4 +1,4 @@
-import * as path from 'path';
+import path from 'path';
 import yargs from 'yargs';
 import merge from 'lodash.merge';
 import { WebpackOptions } from 'webpack/declarations/WebpackOptions';
@@ -36,8 +36,6 @@ export default function createWebpackServerConfig(source: WebpackOptions, option
     },
 
     optimization: {
-      providedExports: true,
-      sideEffects: true,
       minimize: false
     },
 

@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+import fs from 'fs';
 import Source from '../base/Source';
 
 export namespace PackageSpace {

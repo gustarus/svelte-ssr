@@ -1,4 +1,4 @@
-import * as path from 'path';
+import path from 'path';
 import BaseBundler, { BaseBundlerSpace } from './BaseBundler';
 import Command from '../models/Command';
 import createCommand from '../helpers/createCommand';
