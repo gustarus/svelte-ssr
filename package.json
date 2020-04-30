@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "svelte-ssr",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Tool to setup svelte server side rendering with webpack",
   "main": "./index.js",
   "scripts": {
