@@ -1,4 +1,3 @@
-// extract process arguments
 import yargs from 'yargs';
 
 const { port } = yargs.argv;

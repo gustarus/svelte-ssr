@@ -2,7 +2,7 @@ import yargs from 'yargs';
 import path from 'path';
 import { NextFunction, Request, Response } from 'express';
 import httpProxy from 'http-proxy';
-import resolveLocationNormalizedPath from './resolveNormalizedPath';
+import resolveDesiredBase from './resolveDesiredBase';
 
 // extract process arguments
 const { staticProxyPort, staticPathToDirectory } = yargs.argv;
@@ -13,8 +13,7 @@ const { staticProxyPort, staticPathToDirectory } = yargs.argv;
  * Client development server port will be taken from node js server launch arguments.
  */
 export default function createStaticMiddleware(options: { base?: string } = {}): (req: Request, res: Response, next: NextFunction) => void {
-  // resolve base folder into like '/base/'
-  const base = resolveLocationNormalizedPath(options.base || '/');
+  const base = resolveDesiredBase(options.base);
 
   let staticProxy: httpProxy | undefined;
   if (staticProxyPort) {
@@ -29,6 +28,7 @@ export default function createStaticMiddleware(options: { base?: string } = {}):
     throw new Error('Unable to resolve command argument \'staticPathToDirectory\' which is required to serve static files');
   }
 
+  console.log(`Use the following base path to serve assets: '${base}'`);
   return (req: Request, res: Response, next: NextFunction): void => {
     // if request is a path to file
     if (!req.path.match(/\.\w+$/)) {
@@ -45,7 +45,7 @@ export default function createStaticMiddleware(options: { base?: string } = {}):
 
     // '/base/name.extension' -> 'name.extension'
     // TODO Enable in debug mode.
-    // console.log(`Serve static file '${req.path}' from folder`);
+    console.log(`Serve static file '${req.path}' from folder ${req.path.slice(base.length)}`);
     const pathToFileRelative = req.path.slice(base.length);
     const pathToFileAbsolute = path.resolve(staticPathToDirectory as string, pathToFileRelative);
     res.contentType(path.basename(pathToFileAbsolute)).sendFile(pathToFileAbsolute);

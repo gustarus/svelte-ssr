@@ -1,8 +1,8 @@
-// extract process arguments
 import yargs from 'yargs';
+import resolveNormalizedPath from './resolveNormalizedPath';
 
 const { base } = yargs.argv;
 
 export default function resolveDesiredBase(option?: string): string {
-  return option || base || '/' as any;
+  return resolveNormalizedPath(option || base || '/' as any);
 }

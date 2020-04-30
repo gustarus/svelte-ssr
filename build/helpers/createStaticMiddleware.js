@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const yargs_1 = __importDefault(require("yargs"));
 const path_1 = __importDefault(require("path"));
 const http_proxy_1 = __importDefault(require("http-proxy"));
-const resolveNormalizedPath_1 = __importDefault(require("./resolveNormalizedPath"));
+const resolveDesiredBase_1 = __importDefault(require("./resolveDesiredBase"));
 // extract process arguments
 const { staticProxyPort, staticPathToDirectory } = yargs_1.default.argv;
 /**
@@ -15,8 +15,7 @@ const { staticProxyPort, staticPathToDirectory } = yargs_1.default.argv;
  * Client development server port will be taken from node js server launch arguments.
  */
 function createStaticMiddleware(options = {}) {
-    // resolve base folder into like '/base/'
-    const base = resolveNormalizedPath_1.default(options.base || '/');
+    const base = resolveDesiredBase_1.default(options.base);
     let staticProxy;
     if (staticProxyPort) {
         // create static assets proxy service to resolve assets from client development server
@@ -31,6 +30,7 @@ function createStaticMiddleware(options = {}) {
     else {
         throw new Error('Unable to resolve command argument \'staticPathToDirectory\' which is required to serve static files');
     }
+    console.log(`Use the following base path to serve assets: '${base}'`);
     return (req, res, next) => {
         // if request is a path to file
         if (!req.path.match(/\.\w+$/)) {
@@ -45,7 +45,7 @@ function createStaticMiddleware(options = {}) {
         }
         // '/base/name.extension' -> 'name.extension'
         // TODO Enable in debug mode.
-        // console.log(`Serve static file '${req.path}' from folder`);
+        console.log(`Serve static file '${req.path}' from folder ${req.path.slice(base.length)}`);
         const pathToFileRelative = req.path.slice(base.length);
         const pathToFileAbsolute = path_1.default.resolve(staticPathToDirectory, pathToFileRelative);
         res.contentType(path_1.default.basename(pathToFileAbsolute)).sendFile(pathToFileAbsolute);
