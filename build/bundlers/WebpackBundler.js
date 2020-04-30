@@ -44,11 +44,11 @@ class WebpackBundler extends BaseBundler_1.default {
         return pathToFileTemplate.replace('[name]', name).replace('[ext]', 'js');
     }
     resolveBundlerCommandServer(pathToConfig, portToListen) {
-        const options = { mode: this.mode, config: pathToConfig, port: portToListen };
+        const options = { mode: this.mode, config: pathToConfig, port: portToListen, base: this.base };
         return createCommand_1.default(['node', this.pathToWebpackServerExecutable, options]);
     }
     resolveBundlerCommandBuild(pathToConfig) {
-        const options = { mode: this.mode, config: pathToConfig };
+        const options = { mode: this.mode, config: pathToConfig, base: this.base };
         return createCommand_1.default(['node', this.pathToWebpackExecutable, options]);
     }
 }

@@ -15,6 +15,10 @@ export default function displayCommandEnvironment(cmd: Command, server?: Server,
     displayCommandStep(cmd, `\tNode listen to port: ${colors.bold(server.port)}`);
   }
 
+  if (server && server.base) {
+    displayCommandStep(cmd, `\tNode listen to base directory: ${colors.bold(server.base)}`);
+  }
+
   if (bundler && bundler.developmentPortClient) {
     displayCommandStep(cmd, `\tClient bundler listen to port: ${colors.bold(bundler.developmentPortClient)}`);
   }

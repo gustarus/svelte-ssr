@@ -17,6 +17,11 @@ export const DEFAULT_OPTIONS: TDefaultOptions = {
     description: 'Which tool to use to bundle assets (only webpack is supported right now)',
   },
 
+  base: {
+    flag: '--base </>',
+    description: 'Base html tag to listen for the server',
+  },
+
   nodePort: {
     flag: '-p --node-port <3000>',
     description: 'Port to listen for server side rendering server',

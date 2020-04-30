@@ -5,8 +5,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 // extract process arguments
 const yargs_1 = __importDefault(require("yargs"));
-const { port } = yargs_1.default.argv;
-function resolveDesiredPort(option) {
-    return parseInt(option || port || '3000', 10);
+const { base } = yargs_1.default.argv;
+function resolveDesiredBase(option) {
+    return option || base || '/';
 }
-exports.default = resolveDesiredPort;
+exports.default = resolveDesiredBase;

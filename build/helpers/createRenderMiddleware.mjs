@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 import fs from 'fs';
 import parser from 'node-html-parser';
+import resolveDesiredBase from './resolveDesiredBase';
 const mock = function () {
     return __awaiter(this, void 0, void 0, function* () {
         return {};
@@ -26,6 +27,7 @@ const mock = function () {
  */
 export default function createRenderMiddleware(options) {
     const { component, preload, pathToTemplate, target } = options;
+    const base = resolveDesiredBase(options.base);
     if (!component) {
         throw new Error('Option \'component\' is required for this middleware: please, pass svelte component built for server side rendering');
     }
@@ -74,7 +76,7 @@ export default function createRenderMiddleware(options) {
     return (req, res) => {
         const { path, query } = req;
         const { original, clone } = resolveTemplateRepresentative();
-        const location = { path, query };
+        const location = { base, path, query };
         // preload application data
         const processor = preload || mock;
         processor(location).then((data) => {
@@ -82,8 +84,9 @@ export default function createRenderMiddleware(options) {
             const props = Object.assign(Object.assign({}, location), data);
             const { head, html } = component.render(props);
             // set clone content from original one with rendered one
+            const baseTag = `<base href="${base}" />`;
             const propsScript = `<script type="text/javascript">window.$$props = ${JSON.stringify(props)};</script>`;
-            clone.head.set_content(`${propsScript}${original.head.innerHTML}${head}`, { script: true, style: true });
+            clone.head.set_content(`${baseTag}${propsScript}${original.head.innerHTML}${head}`, { script: true, style: true });
             clone.target.set_content(html, { script: true, style: true });
             res.contentType('text/html')
                 .send(clone.dom.toString());

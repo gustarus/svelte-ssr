@@ -1,1 +1,1 @@
-export default function resolveDesiredPort(): unknown;
+export default function resolveDesiredPort(option?: string | number): number;

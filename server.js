@@ -11,3 +11,5 @@ const createStaticMiddleware_1 = __importDefault(require("./build/helpers/create
 exports.createStaticMiddleware = createStaticMiddleware_1.default;
 const resolveDesiredPort_1 = __importDefault(require("./build/helpers/resolveDesiredPort"));
 exports.resolveDesiredPort = resolveDesiredPort_1.default;
+const resolveDesiredBase_1 = __importDefault(require("./build/helpers/resolveDesiredBase"));
+exports.resolveDesiredBase = resolveDesiredBase_1.default;

@@ -1,5 +1,5 @@
-export default function resolveLocationNormalizedPath(path) {
-    const cleaned = path
+export default function resolveNormalizedPath(...parts) {
+    const cleaned = parts.join('/')
         .replace(/\/\/+/g, '/')
         .replace(/\/$/, '')
         .replace(/^\//, '');

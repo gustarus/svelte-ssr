@@ -13,6 +13,9 @@ function displayCommandEnvironment(cmd, server, bundler) {
     if (server && server.port) {
         displayCommandStep_1.default(cmd, `\tNode listen to port: ${colors_1.default.bold(server.port)}`);
     }
+    if (server && server.base) {
+        displayCommandStep_1.default(cmd, `\tNode listen to base directory: ${colors_1.default.bold(server.base)}`);
+    }
     if (bundler && bundler.developmentPortClient) {
         displayCommandStep_1.default(cmd, `\tClient bundler listen to port: ${colors_1.default.bold(bundler.developmentPortClient)}`);
     }

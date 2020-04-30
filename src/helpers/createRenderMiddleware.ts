@@ -1,6 +1,7 @@
 import fs from 'fs';
 import { NextFunction, Request, Response } from 'express';
 import parser, { HTMLElement } from 'node-html-parser';
+import resolveDesiredBase from './resolveDesiredBase';
 
 type TTemplateRepresentative = {
   dom: HTMLElement;
@@ -41,6 +42,7 @@ const mock: TPreloadCallback = async function () {
  */
 export default function createRenderMiddleware(options: { base?: string; component: TSvelteServerSideComponent; preload?: TPreloadCallback, pathToTemplate: string, target: string; }): (req: Request, res: Response, next: NextFunction) => void {
   const { component, preload, pathToTemplate, target } = options;
+  const base = resolveDesiredBase(options.base);
 
   if (!component) {
     throw new Error('Option \'component\' is required for this middleware: please, pass svelte component built for server side rendering');
@@ -100,7 +102,7 @@ export default function createRenderMiddleware(options: { base?: string; compone
   return (req: Request, res: Response): void => {
     const { path, query } = req;
     const { original, clone } = resolveTemplateRepresentative();
-    const location = { path, query };
+    const location = { base, path, query };
 
     // preload application data
     const processor = preload || mock;
@@ -110,8 +112,9 @@ export default function createRenderMiddleware(options: { base?: string; compone
       const { head, html } = component.render(props);
 
       // set clone content from original one with rendered one
+      const baseTag = `<base href="${base}" />`;
       const propsScript = `<script type="text/javascript">window.$$props = ${JSON.stringify(props)};</script>`;
-      clone.head.set_content(`${propsScript}${original.head.innerHTML}${head}`, { script: true, style: true });
+      clone.head.set_content(`${baseTag}${propsScript}${original.head.innerHTML}${head}`, { script: true, style: true });
       clone.target.set_content(html, { script: true, style: true });
 
       res.contentType('text/html')

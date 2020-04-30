@@ -4,6 +4,7 @@ import merge from 'lodash.merge';
 import { WebpackOptions } from 'webpack/declarations/WebpackOptions';
 import { PATH_PROJECT } from '../constants';
 import isPathToFileMatches from './isPathToFileMatches';
+import resolveDesiredBase from './resolveDesiredBase';
 
 const argv = yargs.argv;
 
@@ -17,6 +18,7 @@ export default function createWebpackServerConfig(source: WebpackOptions, option
   // @ts-ignore
   const production = typeof options.production !== 'undefined'
     ? options.production : (argv.mode ? argv.mode === 'production' : false);
+  const base = resolveDesiredBase();
 
   return merge({
     entry: {
@@ -44,6 +46,10 @@ export default function createWebpackServerConfig(source: WebpackOptions, option
       contentBase: path.join(PATH_PROJECT, 'build', 'server'),
       overlay: true,
       compress: true,
+      publicPath: base,
+      historyApiFallback: {
+        index: base,
+      },
     }
   }, source);
 }

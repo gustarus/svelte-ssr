@@ -3,7 +3,8 @@ import Command from '../models/Command';
 export declare namespace BaseBundlerSpace {
     type Modes = 'development' | 'production';
     type Config = {
-        mode: Modes;
+        mode?: Modes;
+        base?: string;
         pathToProject: string;
         pathToClientConfig?: string;
         pathToServerConfig?: string;
@@ -13,6 +14,7 @@ export declare namespace BaseBundlerSpace {
 }
 export default abstract class BaseBundler<C = {}> extends Component<BaseBundlerSpace.Config & C> {
     mode: BaseBundlerSpace.Modes;
+    base: string;
     private _pathToProject;
     private _pathToClientConfig;
     private _pathToServerConfig;

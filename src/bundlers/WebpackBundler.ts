@@ -61,12 +61,12 @@ export default class WebpackBundler extends BaseBundler<WebpackBundlerSpace.Conf
   }
 
   protected resolveBundlerCommandServer(pathToConfig: string, portToListen?: string): Command {
-    const options = { mode: this.mode, config: pathToConfig, port: portToListen };
+    const options = { mode: this.mode, config: pathToConfig, port: portToListen, base: this.base };
     return createCommand(['node', this.pathToWebpackServerExecutable, options]);
   }
 
   protected resolveBundlerCommandBuild(pathToConfig: string): Command {
-    const options = { mode: this.mode, config: pathToConfig };
+    const options = { mode: this.mode, config: pathToConfig, base: this.base };
     return createCommand(['node', this.pathToWebpackExecutable, options]);
   }
 };

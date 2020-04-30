@@ -22,37 +22,42 @@ const resolveCommandConfigurations_1 = __importDefault(require("../helpers/resol
 const Server_1 = __importDefault(require("../models/Server"));
 const displayCommandEnvironment_1 = __importDefault(require("../helpers/displayCommandEnvironment"));
 const execSyncProgressDisplay_1 = __importDefault(require("../helpers/execSyncProgressDisplay"));
+const resolveCommandBase_1 = __importDefault(require("../helpers/resolveCommandBase"));
 function development(program) {
     program
         .command('production')
         .description('Launch node server to serve server side rendering')
         .requiredOption(constants_1.DEFAULT_OPTIONS.bundler.flag, constants_1.DEFAULT_OPTIONS.bundler.description)
+        .option(constants_1.DEFAULT_OPTIONS.base.flag, constants_1.DEFAULT_OPTIONS.base.description, constants_1.DEFAULT_OPTIONS.base.defaultValue)
         .option(constants_1.DEFAULT_OPTIONS.nodePort.flag, constants_1.DEFAULT_OPTIONS.nodePort.description, constants_1.DEFAULT_OPTIONS.clientConfig.defaultValue)
         .option(constants_1.DEFAULT_OPTIONS.clientConfig.flag, constants_1.DEFAULT_OPTIONS.clientConfig.description, constants_1.DEFAULT_OPTIONS.clientConfig.defaultValue)
         .option(constants_1.DEFAULT_OPTIONS.serverConfig.flag, constants_1.DEFAULT_OPTIONS.serverConfig.description, constants_1.DEFAULT_OPTIONS.serverConfig.defaultValue)
         .action((cmd) => __awaiter(this, void 0, void 0, function* () {
         displayCommandGreetings_1.default(cmd);
+        const base = yield resolveCommandBase_1.default(cmd);
         const ports = yield resolveCommandPorts_1.default(cmd);
         const Bundler = yield resolveCommandBundler_1.default(cmd);
         const configurations = yield resolveCommandConfigurations_1.default(cmd);
-        displayCommandStep_1.default(cmd, colors_1.default.yellow('Create server instance with resolved options...'));
-        const server = new Server_1.default({
-            port: ports.node,
-        });
         displayCommandStep_1.default(cmd, colors_1.default.yellow('Create bundler instance with resolved options...'));
         const bundler = new Bundler({
             mode: 'production',
+            base: base,
             pathToProject: constants_1.PATH_PROJECT,
             pathToClientConfig: configurations.client,
             pathToServerConfig: configurations.server,
         });
+        displayCommandStep_1.default(cmd, colors_1.default.yellow('Create server instance with resolved options...'));
+        const server = new Server_1.default({
+            bundler,
+            port: ports.node,
+            base: base,
+            live: false,
+            pathToProject: constants_1.PATH_PROJECT,
+        });
         // display command environment options
         displayCommandEnvironment_1.default(cmd, server, bundler);
         displayCommandStep_1.default(cmd, colors_1.default.yellow('Launch node server...'));
-        execSyncProgressDisplay_1.default('node', bundler.pathToServerBuildScript, {
-            port: server.port,
-            staticPathToDirectory: bundler.pathToClientBuild,
-        });
+        execSyncProgressDisplay_1.default(server.commandStart);
     }));
 }
 exports.default = development;

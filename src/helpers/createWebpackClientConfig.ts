@@ -5,6 +5,7 @@ import { WebpackOptions } from 'webpack/declarations/WebpackOptions';
 import addWebpackProductionHash from './addWebpackProductionHash';
 import { PATH_PROJECT } from '../constants';
 import isPathToFileMatches from './isPathToFileMatches';
+import resolveDesiredBase from './resolveDesiredBase';
 
 const argv = yargs.argv;
 
@@ -17,6 +18,7 @@ export default function createWebpackClientConfig(source: WebpackOptions, option
   const production = typeof options.production !== 'undefined'
     ? options.production : (argv.mode ? argv.mode === 'production' : false);
   const template = options.template || 'index.html';
+  const base = resolveDesiredBase();
 
   return merge({
     entry: {
@@ -36,6 +38,10 @@ export default function createWebpackClientConfig(source: WebpackOptions, option
       contentBase: path.join(PATH_PROJECT, 'build', 'client'),
       overlay: true,
       compress: true,
+      publicPath: base,
+      historyApiFallback: {
+        index: base,
+      },
     },
   }, source);
 }

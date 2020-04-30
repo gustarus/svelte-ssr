@@ -18,8 +18,7 @@ export default class BaseBundler extends Component {
     get defaults() {
         return {
             mode: 'development',
-            developmentPortClient: '8080',
-            developmentPortServer: '8081',
+            base: '/',
         };
     }
     set pathToProject(value) {

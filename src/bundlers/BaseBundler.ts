@@ -9,7 +9,8 @@ export namespace BaseBundlerSpace {
   export type Modes = 'development' | 'production';
 
   export type Config = {
-    mode: Modes;
+    mode?: Modes;
+    base?: string;
     pathToProject: string;
     pathToClientConfig?: string;
     pathToServerConfig?: string;
@@ -21,6 +22,8 @@ export namespace BaseBundlerSpace {
 export default abstract class BaseBundler<C = {}> extends Component<BaseBundlerSpace.Config & C> {
 
   public mode: BaseBundlerSpace.Modes;
+
+  public base: string;
 
   private _pathToProject: string;
 
@@ -39,8 +42,7 @@ export default abstract class BaseBundler<C = {}> extends Component<BaseBundlerS
   public get defaults(): any {
     return {
       mode: 'development' as BaseBundlerSpace.Modes,
-      developmentPortClient: '8080',
-      developmentPortServer: '8081',
+      base: '/',
     };
   }
 

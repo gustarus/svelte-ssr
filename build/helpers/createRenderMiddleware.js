@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = __importDefault(require("fs"));
 const node_html_parser_1 = __importDefault(require("node-html-parser"));
+const resolveDesiredBase_1 = __importDefault(require("./resolveDesiredBase"));
 const mock = function () {
     return __awaiter(this, void 0, void 0, function* () {
         return {};
@@ -31,6 +32,7 @@ const mock = function () {
  */
 function createRenderMiddleware(options) {
     const { component, preload, pathToTemplate, target } = options;
+    const base = resolveDesiredBase_1.default(options.base);
     if (!component) {
         throw new Error('Option \'component\' is required for this middleware: please, pass svelte component built for server side rendering');
     }
@@ -79,7 +81,7 @@ function createRenderMiddleware(options) {
     return (req, res) => {
         const { path, query } = req;
         const { original, clone } = resolveTemplateRepresentative();
-        const location = { path, query };
+        const location = { base, path, query };
         // preload application data
         const processor = preload || mock;
         processor(location).then((data) => {
@@ -87,8 +89,9 @@ function createRenderMiddleware(options) {
             const props = Object.assign(Object.assign({}, location), data);
             const { head, html } = component.render(props);
             // set clone content from original one with rendered one
+            const baseTag = `<base href="${base}" />`;
             const propsScript = `<script type="text/javascript">window.$$props = ${JSON.stringify(props)};</script>`;
-            clone.head.set_content(`${propsScript}${original.head.innerHTML}${head}`, { script: true, style: true });
+            clone.head.set_content(`${baseTag}${propsScript}${original.head.innerHTML}${head}`, { script: true, style: true });
             clone.target.set_content(html, { script: true, style: true });
             res.contentType('text/html')
                 .send(clone.dom.toString());

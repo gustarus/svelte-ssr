@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
-import path from 'path';
+import * as path from 'path';
+import colors from 'colors';
 import program from 'commander';
 import build from './cli/build';
 import development from './cli/development';
@@ -20,6 +21,12 @@ program
 build(program);
 development(program);
 production(program);
+
+// listen to unhandled promises
+process.on('unhandledRejection' as any, (error: Error) => {
+  console.log(error);
+  console.log(colors.red(error.message));
+});
 
 // parse arguments
 program.parse(process.argv);

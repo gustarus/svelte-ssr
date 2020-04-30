@@ -1,1 +1,1 @@
-export default function resolveLocationNormalizedPath(path: string): string;
+export default function resolveNormalizedPath(...parts: string[]): string;
