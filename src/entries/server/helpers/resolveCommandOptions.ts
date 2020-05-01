@@ -1,8 +1,7 @@
 import yargs from 'yargs';
-import { DEFAULT_LISTEN_BASE, DEFAULT_LISTEN_HOST, DEFAULT_LISTEN_PORT } from '../../../constants';
+import { DEFAULT_LISTEN_BASE, DEFAULT_LISTEN_PORT } from '../../../constants';
 
-const { host, port, base, staticProxyPort, staticPathToDirectory } = yargs.options({
-  host: { type: 'string', default: DEFAULT_LISTEN_HOST },
+const { port, base, staticProxyPort, staticPathToDirectory } = yargs.options({
   port: { type: 'number', default: DEFAULT_LISTEN_PORT },
   base: { type: 'string', default: DEFAULT_LISTEN_BASE },
   staticProxyPort: { type: 'number' },
@@ -10,7 +9,6 @@ const { host, port, base, staticProxyPort, staticPathToDirectory } = yargs.optio
 }).argv;
 
 type TOptions = {
-  host: string;
   port: number;
   base: string;
   staticProxyPort?: number;
@@ -18,5 +16,5 @@ type TOptions = {
 }
 
 export default function resolveCommandOptions(): TOptions {
-  return { host, port, base, staticProxyPort, staticPathToDirectory };
+  return { port, base, staticProxyPort, staticPathToDirectory };
 }

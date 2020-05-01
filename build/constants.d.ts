@@ -3,7 +3,6 @@ export declare const PATH_ROOT: string;
 export declare const PATH_PROJECT: string;
 export declare const ENTRY_CLIENT = "client";
 export declare const ENTRY_SERVER = "server";
-export declare const DEFAULT_LISTEN_HOST = "localhost";
 export declare const DEFAULT_LISTEN_PORT = 3000;
 export declare const DEFAULT_LISTEN_BASE = "/";
 export declare const DEFAULT_REDIRECT_URL = "/";

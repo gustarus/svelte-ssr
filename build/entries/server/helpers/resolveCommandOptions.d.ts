@@ -1,5 +1,4 @@
 declare type TOptions = {
-    host: string;
     port: number;
     base: string;
     staticProxyPort?: number;

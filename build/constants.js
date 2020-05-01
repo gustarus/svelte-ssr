@@ -8,7 +8,6 @@ exports.PATH_ROOT = resolvePackagePath_1.default(__dirname);
 exports.PATH_PROJECT = resolvePackagePath_1.default(process.cwd());
 exports.ENTRY_CLIENT = 'client';
 exports.ENTRY_SERVER = 'server';
-exports.DEFAULT_LISTEN_HOST = 'localhost';
 exports.DEFAULT_LISTEN_PORT = 3000;
 exports.DEFAULT_LISTEN_BASE = '/';
 exports.DEFAULT_REDIRECT_URL = '/';

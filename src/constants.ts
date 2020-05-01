@@ -7,7 +7,6 @@ export const PATH_PROJECT = resolvePackagePath(process.cwd());
 export const ENTRY_CLIENT = 'client';
 export const ENTRY_SERVER = 'server';
 
-export const DEFAULT_LISTEN_HOST = 'localhost';
 export const DEFAULT_LISTEN_PORT = 3000;
 export const DEFAULT_LISTEN_BASE = '/';
 export const DEFAULT_REDIRECT_URL = '/';
