@@ -2,7 +2,8 @@ import { NextFunction, Request, Response } from 'express';
 declare type TOptions = {
     base: string;
     url?: string;
-    status?: number;
+    status?: string | number;
+    verbose?: boolean;
 };
 /**
  * Create middleware to serve static files.

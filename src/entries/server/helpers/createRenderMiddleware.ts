@@ -1,4 +1,3 @@
-import colors from 'colors';
 import { NextFunction, Request, Response } from 'express';
 import resolveTemplateRepresentative from './resolveTemplateRepresentative';
 import resolveNormalizedPath from '../../../helpers/resolveNormalizedPath';
@@ -7,6 +6,8 @@ import resolveResponse from './resolveResponse';
 import RedirectCandidate from '../models/Redirect';
 import ResponseCandidate from '../models/Response';
 import resolveCandidate from './resolveCandidate';
+import logger from '../../../instances/logger';
+import resolveNormalizedPathWithBase from '../../../helpers/resolveNormalizedPathWithBase';
 
 type TSvelteServerSideComponent = {
   render: (props?: {}, options?: {}) => TSvelteServerSideRenderResult;
@@ -35,6 +36,8 @@ type TOptions = {
   preload?: TPreloadCallback,
   pathToTemplate: string,
   targetSelector: string;
+  verbose?: boolean;
+  debug?: boolean;
 };
 
 /**
@@ -51,13 +54,15 @@ export default function createRenderMiddleware(options: TOptions): (req: Request
   const { component, pathToTemplate, targetSelector } = options;
   const base = resolveNormalizedPath(options.base);
   const preload = options.preload || (() => Promise.resolve({}));
+  const verbose = typeof options.verbose !== 'undefined' ? options.verbose : false;
+  const debug = typeof options.debug !== 'undefined' ? options.debug : false;
 
   // create preload helpers
   const redirect = resolveRedirect;
   const response = resolveResponse;
   const helpers: TPreloadCallbackHelpers = { redirect, response };
 
-  console.log(`Use render middleware to serve server side rendering results from '${base}'`);
+  logger.info(`Use render middleware to serve server side rendering results from '${base}'`);
 
   if (!base) {
     throw new Error('Option \'base\' is required to serve server side rendering results');
@@ -84,8 +89,11 @@ export default function createRenderMiddleware(options: TOptions): (req: Request
     const query = req.query;
     const location: TPreloadCallbackLocation = { base, path, inner, query };
 
+    verbose && logger.trace(`Render request candidate: '${req.path}'`);
+
     // serve render only from desired base
     if (path.indexOf(base) !== 0) {
+      verbose && logger.warning(`Request is outside of the base path '${base}'`, 1);
       return next();
     }
 
@@ -93,16 +101,21 @@ export default function createRenderMiddleware(options: TOptions): (req: Request
     let result: TPreloadCallbackResult;
     try {
       result = await preload(location, resolveCandidate, helpers);
+      verbose && logger.success('Preload request successfully performed', 1);
+      debug && logger.debug(result);
     } catch (error) {
-      console.log(colors.red(`Preload error: ${error.message}`));
+      verbose && logger.error(`Preload request failed: ${error.message}`, 1);
       return next(error);
     }
 
     if (result instanceof RedirectCandidate) {
-      return res.redirect(result.status, result.url);
+      const urlWithBase = resolveNormalizedPathWithBase(base, result.url);
+      verbose && logger.trace(`Preload request returned redirect to '${result.url}' with status '${result.status}' but actual redirect will be '${urlWithBase}' because of the base path`, 1);
+      return res.redirect(result.status, urlWithBase);
     }
 
     if (result instanceof ResponseCandidate) {
+      verbose && logger.trace(`Preload request returned plain response: '${result.body}' with status '${result.status}'`, 1);
       return res.status(result.status).send(result.body);
     }
 
@@ -115,7 +128,7 @@ export default function createRenderMiddleware(options: TOptions): (req: Request
       head = rendered.head;
       html = rendered.html;
     } catch (error) {
-      console.log(colors.red(`Render error: ${error.message}`));
+      verbose && logger.error(`Render failed: '${error.message}'`, 1);
       return next(error);
     }
 
@@ -129,6 +142,7 @@ export default function createRenderMiddleware(options: TOptions): (req: Request
     clone.target.set_content(html, { script: true, style: true });
 
     // send rendered result
+    verbose && logger.success('Render successfully performed', 1);
     res.contentType('text/html')
       .send(clone.dom.toString());
   };

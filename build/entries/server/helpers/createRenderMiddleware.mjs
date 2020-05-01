@@ -7,7 +7,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import colors from 'colors';
 import resolveTemplateRepresentative from './resolveTemplateRepresentative';
 import resolveNormalizedPath from '../../../helpers/resolveNormalizedPath';
 import resolveRedirect from './resolveRedirect';
@@ -15,6 +14,8 @@ import resolveResponse from './resolveResponse';
 import RedirectCandidate from '../models/Redirect';
 import ResponseCandidate from '../models/Response';
 import resolveCandidate from './resolveCandidate';
+import logger from '../../../instances/logger';
+import resolveNormalizedPathWithBase from '../../../helpers/resolveNormalizedPathWithBase';
 /**
  * Create middleware to render application from template with desired options.
  * {
@@ -29,11 +30,13 @@ export default function createRenderMiddleware(options) {
     const { component, pathToTemplate, targetSelector } = options;
     const base = resolveNormalizedPath(options.base);
     const preload = options.preload || (() => Promise.resolve({}));
+    const verbose = typeof options.verbose !== 'undefined' ? options.verbose : false;
+    const debug = typeof options.debug !== 'undefined' ? options.debug : false;
     // create preload helpers
     const redirect = resolveRedirect;
     const response = resolveResponse;
     const helpers = { redirect, response };
-    console.log(`Use render middleware to serve server side rendering results from '${base}'`);
+    logger.info(`Use render middleware to serve server side rendering results from '${base}'`);
     if (!base) {
         throw new Error('Option \'base\' is required to serve server side rendering results');
     }
@@ -53,23 +56,30 @@ export default function createRenderMiddleware(options) {
         const inner = resolveNormalizedPath(path.slice(base.length));
         const query = req.query;
         const location = { base, path, inner, query };
+        verbose && logger.trace(`Render request candidate: '${req.path}'`);
         // serve render only from desired base
         if (path.indexOf(base) !== 0) {
+            verbose && logger.warning(`Request is outside of the base path '${base}'`, 1);
             return next();
         }
         // preload component data
         let result;
         try {
             result = yield preload(location, resolveCandidate, helpers);
+            verbose && logger.success('Preload request successfully performed', 1);
+            debug && logger.debug(result);
         }
         catch (error) {
-            console.log(colors.red(`Preload error: ${error.message}`));
+            verbose && logger.error(`Preload request failed: ${error.message}`, 1);
             return next(error);
         }
         if (result instanceof RedirectCandidate) {
-            return res.redirect(result.status, result.url);
+            const urlWithBase = resolveNormalizedPathWithBase(base, result.url);
+            verbose && logger.trace(`Preload request returned redirect to '${result.url}' with status '${result.status}' but actual redirect will be '${urlWithBase}' because of the base path`, 1);
+            return res.redirect(result.status, urlWithBase);
         }
         if (result instanceof ResponseCandidate) {
+            verbose && logger.trace(`Preload request returned plain response: '${result.body}' with status '${result.status}'`, 1);
             return res.status(result.status).send(result.body);
         }
         // render component with preloaded data
@@ -82,7 +92,7 @@ export default function createRenderMiddleware(options) {
             html = rendered.html;
         }
         catch (error) {
-            console.log(colors.red(`Render error: ${error.message}`));
+            verbose && logger.error(`Render failed: '${error.message}'`, 1);
             return next(error);
         }
         // set clone content from original one with rendered one
@@ -94,6 +104,7 @@ export default function createRenderMiddleware(options) {
         });
         clone.target.set_content(html, { script: true, style: true });
         // send rendered result
+        verbose && logger.success('Render successfully performed', 1);
         res.contentType('text/html')
             .send(clone.dom.toString());
     });

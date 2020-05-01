@@ -4,6 +4,7 @@ declare type TOptions = {
     pattern?: RegExp;
     staticProxyPort?: number;
     staticPathToDirectory?: string;
+    verbose?: boolean;
 };
 /**
  * Create middleware to serve static files.

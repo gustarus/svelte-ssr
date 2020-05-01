@@ -37,6 +37,8 @@ declare type TOptions = {
     preload?: TPreloadCallback;
     pathToTemplate: string;
     targetSelector: string;
+    verbose?: boolean;
+    debug?: boolean;
 };
 /**
  * Create middleware to render application from template with desired options.

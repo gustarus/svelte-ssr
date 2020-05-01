@@ -12,18 +12,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const colors_1 = __importDefault(require("colors"));
+const logger_1 = __importDefault(require("../../../instances/logger"));
 /**
  * Create middleware to serve static files.
  * If there is a client development server running we are using proxy to serve files.
  * Client development server port will be taken from node js server launch arguments.
  */
 function createCatchMiddleware(options = {}) {
-    console.log(`Use catch middleware to serve errors`);
+    const verbose = typeof options.verbose !== 'undefined' ? options.verbose : false;
+    logger_1.default.info('Use catch middleware to serve errors');
     return (error, req, res, next) => __awaiter(this, void 0, void 0, function* () {
-        console.log(error);
-        console.log(colors_1.default.red(error.message));
-        res.status(500).send(error);
+        verbose && logger_1.default.error(error);
+        const body = verbose ? error.toString() : undefined;
+        res.status(500).send(body);
     });
 }
 exports.default = createCatchMiddleware;

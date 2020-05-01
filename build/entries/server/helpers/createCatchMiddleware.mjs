@@ -7,17 +7,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import colors from 'colors';
+import logger from '../../../instances/logger';
 /**
  * Create middleware to serve static files.
  * If there is a client development server running we are using proxy to serve files.
  * Client development server port will be taken from node js server launch arguments.
  */
 export default function createCatchMiddleware(options = {}) {
-    console.log(`Use catch middleware to serve errors`);
+    const verbose = typeof options.verbose !== 'undefined' ? options.verbose : false;
+    logger.info('Use catch middleware to serve errors');
     return (error, req, res, next) => __awaiter(this, void 0, void 0, function* () {
-        console.log(error);
-        console.log(colors.red(error.message));
-        res.status(500).send(error);
+        verbose && logger.error(error);
+        const body = verbose ? error.toString() : undefined;
+        res.status(500).send(body);
     });
 }
