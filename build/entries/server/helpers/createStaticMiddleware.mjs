@@ -11,6 +11,7 @@ import path from 'path';
 import httpProxy from 'http-proxy';
 import resolveNormalizedPath from '../../../helpers/resolveNormalizedPath';
 import logger from '../../../instances/logger';
+import resolveNormalizedUrl from '../../../helpers/resolveNormalizedUrl';
 /**
  * Create middleware to serve static files.
  * If there is a client development server running we are using proxy to serve files.
@@ -41,14 +42,15 @@ export default function createStaticMiddleware(options) {
         throw new Error('Unable to resolve command argument \'staticPathToDirectory\' which is required to serve static files');
     }
     return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
-        verbose && logger.trace(`Static file request candidate: '${req.path}'`);
+        const url = resolveNormalizedUrl(req.path);
+        verbose && logger.trace(`Static file request candidate: '${url}'`);
         // serve static only from desired base
-        if (req.path.indexOf(base) !== 0) {
+        if (url.indexOf(base) !== 0) {
             verbose && logger.warning(`Request is outside of the base path '${base}'`, 1);
             return next();
         }
         // if request is a path to file
-        if (!pattern.test(req.path)) {
+        if (!pattern.test(url)) {
             verbose && logger.warning(`Request doesn't match pattern '${pattern.toString()}'`, 1);
             return next();
         }
@@ -59,7 +61,7 @@ export default function createStaticMiddleware(options) {
             return;
         }
         // '/base/name.extension' -> 'name.extension'
-        const pathToFileRelative = req.path.slice(base.length);
+        const pathToFileRelative = url.slice(base.length);
         const pathToFileAbsolute = path.resolve(staticPathToDirectory, pathToFileRelative);
         try {
             // serve static file otherwise throw an error

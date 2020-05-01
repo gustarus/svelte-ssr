@@ -10,9 +10,10 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import colors from 'colors';
 import displayCommandStep from './displayCommandStep';
 import resolveNormalizedPath from './resolveNormalizedPath';
+import { DEFAULT_LISTEN_BASE } from '../constants';
 export default function resolveCommandBase(cmd) {
     return __awaiter(this, void 0, void 0, function* () {
         displayCommandStep(cmd, colors.yellow('Resolve base folder to launch the server...'));
-        return resolveNormalizedPath(cmd.base);
+        return cmd.base ? resolveNormalizedPath(cmd.base) : DEFAULT_LISTEN_BASE;
     });
 }

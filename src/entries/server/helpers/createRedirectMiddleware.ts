@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { DEFAULT_REDIRECT_STATUS, DEFAULT_REDIRECT_URL } from '../../../constants';
 import resolveNormalizedPath from '../../../helpers/resolveNormalizedPath';
 import logger from '../../../instances/logger';
-import resolveNormalizedPathWithBase from '../../../helpers/resolveNormalizedPathWithBase';
+import resolveNormalizedUrlWithBase from '../../../helpers/resolveNormalizedUrlWithBase';
 
 type TOptions = {
   base: string,
@@ -19,7 +19,8 @@ type TOptions = {
 export default function createRedirectMiddleware(options: TOptions): (req: Request, res: Response, next: NextFunction) => Promise<any> {
   const base = resolveNormalizedPath(options.base);
   const url = options.url || DEFAULT_REDIRECT_URL;
-  const resolved = resolveNormalizedPathWithBase(base, url);
+  const resolved = url.indexOf('/') === 0
+    ? resolveNormalizedUrlWithBase(base, url) : url;
   const status = options.status
     ? parseInt(options.status.toString(), 10)
     : DEFAULT_REDIRECT_STATUS;

@@ -20,7 +20,8 @@ const Redirect_1 = __importDefault(require("../models/Redirect"));
 const Response_1 = __importDefault(require("../models/Response"));
 const resolveCandidate_1 = __importDefault(require("./resolveCandidate"));
 const logger_1 = __importDefault(require("../../../instances/logger"));
-const resolveNormalizedPathWithBase_1 = __importDefault(require("../../../helpers/resolveNormalizedPathWithBase"));
+const resolveRenderProperties_1 = __importDefault(require("./resolveRenderProperties"));
+const resolveNormalizedUrlWithBase_1 = __importDefault(require("../../../helpers/resolveNormalizedUrlWithBase"));
 /**
  * Create middleware to render application from template with desired options.
  * {
@@ -33,6 +34,7 @@ const resolveNormalizedPathWithBase_1 = __importDefault(require("../../../helper
  */
 function createRenderMiddleware(options) {
     const { component, pathToTemplate, targetSelector } = options;
+    const componentProps = options.componentProps || {};
     const base = resolveNormalizedPath_1.default(options.base);
     const preload = options.preload || (() => Promise.resolve({}));
     const verbose = typeof options.verbose !== 'undefined' ? options.verbose : false;
@@ -79,16 +81,34 @@ function createRenderMiddleware(options) {
             return next(error);
         }
         if (result instanceof Redirect_1.default) {
-            const urlWithBase = resolveNormalizedPathWithBase_1.default(base, result.url);
-            verbose && logger_1.default.trace(`Preload request returned redirect to '${result.url}' with status '${result.status}' but actual redirect will be '${urlWithBase}' because of the base path`, 1);
-            return res.redirect(result.status, urlWithBase);
+            let urlResolved;
+            if (result.url.indexOf('/') === 0) {
+                // redirect url is relative
+                urlResolved = resolveNormalizedUrlWithBase_1.default(base, result.url);
+                verbose && logger_1.default.trace(`Preload request returned redirect to '${result.url}' with status '${result.status}' but actual redirect will be '${urlResolved}' because of the base path`, 1);
+            }
+            else {
+                // redirect url is absolute
+                urlResolved = result.url;
+                verbose && logger_1.default.trace(`Preload request returned absolute redirect to '${result.url}' with status '${result.status}'`, 1);
+            }
+            return res.redirect(result.status, urlResolved);
         }
         if (result instanceof Response_1.default) {
             verbose && logger_1.default.trace(`Preload request returned plain response: '${result.body}' with status '${result.status}'`, 1);
             return res.status(result.status).send(result.body);
         }
+        // resolve render component props
+        const { props, conflicts } = resolveRenderProperties_1.default(location, result, componentProps);
+        if (conflicts.location.length) {
+            const strings = conflicts.location.map((name) => `'${name}'`);
+            verbose && logger_1.default.warning(`Component properties conflict detected: properties from resolved location ${strings.join(', ')} will be overridden`, 1);
+        }
+        if (conflicts.result.length) {
+            const strings = conflicts.result.map((name) => `'${name}'`);
+            verbose && logger_1.default.warning(`Component properties conflict detected: properties from preload result ${strings.join(', ')} will be overridden`, 1);
+        }
         // render component with preloaded data
-        const props = Object.assign(Object.assign({}, location), result);
         let head;
         let html;
         try {

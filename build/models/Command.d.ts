@@ -15,6 +15,7 @@ export declare namespace CommandSpace {
 export default class Command<C = {}> extends Component<C & CommandSpace.Config> {
     formatter: Formatter;
     parts: CommandSpace.Part[];
+    merge(...parts: CommandSpace.Part[]): this;
     compile(runtimeConfig?: CommandSpace.Runtime): string;
     protected compileOptions(options: {
         [key: string]: string | string[];

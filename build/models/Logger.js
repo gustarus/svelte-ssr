@@ -12,7 +12,7 @@ class Logger extends Component_1.default {
         const timestamp = moment_1.default().format('HH:mm:ss');
         const space = '  '.repeat(level);
         const wrapped = wrapper(message.toString());
-        console.log(`[${timestamp}]${space}${wrapped}`);
+        console.log(`[${timestamp}] ${space}${wrapped}`);
     }
     trace(message, level) {
         this.log(level, message, (message) => message);

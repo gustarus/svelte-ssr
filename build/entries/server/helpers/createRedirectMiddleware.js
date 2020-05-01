@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const constants_1 = require("../../../constants");
 const resolveNormalizedPath_1 = __importDefault(require("../../../helpers/resolveNormalizedPath"));
 const logger_1 = __importDefault(require("../../../instances/logger"));
-const resolveNormalizedPathWithBase_1 = __importDefault(require("../../../helpers/resolveNormalizedPathWithBase"));
+const resolveNormalizedUrlWithBase_1 = __importDefault(require("../../../helpers/resolveNormalizedUrlWithBase"));
 /**
  * Create middleware to serve static files.
  * If there is a client development server running we are using proxy to serve files.
@@ -24,7 +24,8 @@ const resolveNormalizedPathWithBase_1 = __importDefault(require("../../../helper
 function createRedirectMiddleware(options) {
     const base = resolveNormalizedPath_1.default(options.base);
     const url = options.url || constants_1.DEFAULT_REDIRECT_URL;
-    const resolved = resolveNormalizedPathWithBase_1.default(base, url);
+    const resolved = url.indexOf('/') === 0
+        ? resolveNormalizedUrlWithBase_1.default(base, url) : url;
     const status = options.status
         ? parseInt(options.status.toString(), 10)
         : constants_1.DEFAULT_REDIRECT_STATUS;

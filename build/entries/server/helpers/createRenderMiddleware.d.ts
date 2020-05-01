@@ -4,6 +4,9 @@ import resolveResponse from './resolveResponse';
 import RedirectCandidate from '../models/Redirect';
 import ResponseCandidate from '../models/Response';
 import resolveCandidate from './resolveCandidate';
+declare type TSvelteComponentProps = {
+    [key: string]: any;
+};
 declare type TSvelteServerSideComponent = {
     render: (props?: {}, options?: {}) => TSvelteServerSideRenderResult;
 };
@@ -34,6 +37,7 @@ declare type TPreloadCallback = (location: TPreloadCallbackLocation, resolve: ty
 declare type TOptions = {
     base: string;
     component: TSvelteServerSideComponent;
+    componentProps?: TSvelteComponentProps;
     preload?: TPreloadCallback;
     pathToTemplate: string;
     targetSelector: string;

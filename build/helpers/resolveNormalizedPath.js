@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function resolveNormalizedPath(...parts) {
-    const cleaned = parts.join('/')
+function resolveNormalizedPath(path) {
+    const cleaned = path
         .replace(/\/\/+/g, '/')
         .replace(/\/$/, '')
         .replace(/^\//, '');

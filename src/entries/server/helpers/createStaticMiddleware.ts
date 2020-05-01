@@ -3,6 +3,7 @@ import { NextFunction, Request, Response } from 'express';
 import httpProxy from 'http-proxy';
 import resolveNormalizedPath from '../../../helpers/resolveNormalizedPath';
 import logger from '../../../instances/logger';
+import resolveNormalizedUrl from '../../../helpers/resolveNormalizedUrl';
 
 type TOptions = {
   base: string,
@@ -44,16 +45,18 @@ export default function createStaticMiddleware(options: TOptions): (req: Request
   }
 
   return async (req: Request, res: Response, next: NextFunction): Promise<any> => {
-    verbose && logger.trace(`Static file request candidate: '${req.path}'`);
+    const url = resolveNormalizedUrl(req.path);
+
+    verbose && logger.trace(`Static file request candidate: '${url}'`);
 
     // serve static only from desired base
-    if (req.path.indexOf(base) !== 0) {
+    if (url.indexOf(base) !== 0) {
       verbose && logger.warning(`Request is outside of the base path '${base}'`, 1);
       return next();
     }
 
     // if request is a path to file
-    if (!pattern.test(req.path)) {
+    if (!pattern.test(url)) {
       verbose && logger.warning(`Request doesn't match pattern '${pattern.toString()}'`, 1);
       return next();
     }
@@ -66,7 +69,7 @@ export default function createStaticMiddleware(options: TOptions): (req: Request
     }
 
     // '/base/name.extension' -> 'name.extension'
-    const pathToFileRelative = req.path.slice(base.length);
+    const pathToFileRelative = url.slice(base.length);
     const pathToFileAbsolute = path.resolve(staticPathToDirectory as string, pathToFileRelative);
 
     try {

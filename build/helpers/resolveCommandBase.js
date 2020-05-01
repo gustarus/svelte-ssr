@@ -15,10 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const colors_1 = __importDefault(require("colors"));
 const displayCommandStep_1 = __importDefault(require("./displayCommandStep"));
 const resolveNormalizedPath_1 = __importDefault(require("./resolveNormalizedPath"));
+const constants_1 = require("../constants");
 function resolveCommandBase(cmd) {
     return __awaiter(this, void 0, void 0, function* () {
         displayCommandStep_1.default(cmd, colors_1.default.yellow('Resolve base folder to launch the server...'));
-        return resolveNormalizedPath_1.default(cmd.base);
+        return cmd.base ? resolveNormalizedPath_1.default(cmd.base) : constants_1.DEFAULT_LISTEN_BASE;
     });
 }
 exports.default = resolveCommandBase;

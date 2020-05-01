@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { DEFAULT_REDIRECT_STATUS, DEFAULT_REDIRECT_URL } from '../../../constants';
 import resolveNormalizedPath from '../../../helpers/resolveNormalizedPath';
 import logger from '../../../instances/logger';
-import resolveNormalizedPathWithBase from '../../../helpers/resolveNormalizedPathWithBase';
+import resolveNormalizedUrlWithBase from '../../../helpers/resolveNormalizedUrlWithBase';
 /**
  * Create middleware to serve static files.
  * If there is a client development server running we are using proxy to serve files.
@@ -19,7 +19,8 @@ import resolveNormalizedPathWithBase from '../../../helpers/resolveNormalizedPat
 export default function createRedirectMiddleware(options) {
     const base = resolveNormalizedPath(options.base);
     const url = options.url || DEFAULT_REDIRECT_URL;
-    const resolved = resolveNormalizedPathWithBase(base, url);
+    const resolved = url.indexOf('/') === 0
+        ? resolveNormalizedUrlWithBase(base, url) : url;
     const status = options.status
         ? parseInt(options.status.toString(), 10)
         : DEFAULT_REDIRECT_STATUS;

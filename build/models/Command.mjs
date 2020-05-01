@@ -1,5 +1,9 @@
 import Component from '../base/Component';
 export default class Command extends Component {
+    merge(...parts) {
+        this.parts = [...this.parts, ...parts];
+        return this;
+    }
     compile(runtimeConfig = { wrap: false }) {
         const prepared = this.parts.map((part) => {
             if (part instanceof Command) {

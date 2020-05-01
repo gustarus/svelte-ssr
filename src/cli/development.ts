@@ -61,11 +61,18 @@ export default function development(program: Command) {
       fs.mkdirSync(pathToTargetServerDirectory, { recursive: true });
       fs.writeFileSync(bundler.pathToServerBuildScript, '');
 
+      // proxy additional arguments to bundler server command
+      const bundlerCommandAdditional = {
+        nodePort: server.port,
+        clientPort: bundler.developmentPortClient,
+        serverPort: bundler.developmentPortServer,
+      };
+
       displayCommandStep(cmd, colors.yellow('Concurrently start node js server, server webpack and client webpack...'));
       return concurrently([
         { command: server.commandStart.compile(), name: 'node' },
-        { command: bundler.bundlerCommandServerStart.compile(), name: 'server' },
-        { command: bundler.bundlerCommandClientStart.compile(), name: 'client' },
+        { command: bundler.bundlerCommandServerStart.merge(bundlerCommandAdditional).compile(), name: 'server' },
+        { command: bundler.bundlerCommandClientStart.merge(bundlerCommandAdditional).compile(), name: 'client' },
       ], {
         killOthers: ['failure', 'success'],
         restartTries: 3,

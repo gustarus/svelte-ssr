@@ -20,6 +20,11 @@ export default class Command<C = {}> extends Component<C & CommandSpace.Config> 
 
   public parts: CommandSpace.Part[];
 
+  public merge(...parts: CommandSpace.Part[]): this {
+    this.parts = [...this.parts, ...parts];
+    return this;
+  }
+
   public compile(runtimeConfig: CommandSpace.Runtime = { wrap: false }): string {
     const prepared = this.parts.map((part) => {
       if (part instanceof Command) {
