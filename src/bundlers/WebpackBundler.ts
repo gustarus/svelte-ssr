@@ -66,7 +66,7 @@ export default class WebpackBundler extends Bundler<WebpackBundlerSpace.Config> 
   }
 
   protected resolveBundlerCommandBuild(pathToConfig: string): Command {
-    const options = { mode: this.mode, config: pathToConfig, base: this.base };
+    const options = { mode: this.mode, config: pathToConfig };
     return createCommand(['node', this.pathToWebpackExecutable, options]);
   }
 };

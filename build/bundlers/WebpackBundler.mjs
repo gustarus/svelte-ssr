@@ -43,7 +43,7 @@ export default class WebpackBundler extends Bundler {
         return createCommand(['node', this.pathToWebpackServerExecutable, options]);
     }
     resolveBundlerCommandBuild(pathToConfig) {
-        const options = { mode: this.mode, config: pathToConfig, base: this.base };
+        const options = { mode: this.mode, config: pathToConfig };
         return createCommand(['node', this.pathToWebpackExecutable, options]);
     }
 }

@@ -2,7 +2,7 @@ import Component from '../../../base/Component';
 export declare namespace RedirectSpace {
     type Config = {
         status?: number;
-        url: string;
+        url?: string;
     };
 }
 export default class Redirect extends Component<RedirectSpace.Config> {
