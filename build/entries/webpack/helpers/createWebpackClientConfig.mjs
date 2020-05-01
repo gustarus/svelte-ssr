@@ -23,6 +23,7 @@ export default function createWebpackClientConfig(source, options = {}) {
         target: 'web',
         node: {
             fs: 'empty',
+            path: 'empty',
         },
         output: {
             path: path.resolve(PATH_PROJECT, 'build', 'client'),

@@ -29,6 +29,7 @@ export default function createWebpackClientConfig(source: WebpackOptions, option
 
     node: {
       fs: 'empty',
+      path: 'empty',
     },
 
     output: {
