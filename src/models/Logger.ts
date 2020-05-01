@@ -1,3 +1,4 @@
+import util from 'util';
 import colors from 'colors';
 import moment from 'moment';
 import Component from '../base/Component';
@@ -39,7 +40,7 @@ export default class Logger extends Component<LoggerSpace.Config> {
     this.log(level, message, (message) => colors.red(message));
   }
 
-  public debug(...data: any[]): void {
-    console.log(...data);
+  public inspect(data: any): void {
+    console.log(util.inspect(data, { depth: 10, colors: true, maxArrayLength: 5 }));
   }
 };

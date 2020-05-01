@@ -1,3 +1,4 @@
+import util from 'util';
 import colors from 'colors';
 import moment from 'moment';
 import Component from '../base/Component';
@@ -23,8 +24,8 @@ export default class Logger extends Component {
     error(message, level) {
         this.log(level, message, (message) => colors.red(message));
     }
-    debug(...data) {
-        console.log(...data);
+    inspect(data) {
+        console.log(util.inspect(data, { depth: 10, colors: true, maxArrayLength: 5 }));
     }
 }
 ;

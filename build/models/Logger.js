@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const util_1 = __importDefault(require("util"));
 const colors_1 = __importDefault(require("colors"));
 const moment_1 = __importDefault(require("moment"));
 const Component_1 = __importDefault(require("../base/Component"));
@@ -28,8 +29,8 @@ class Logger extends Component_1.default {
     error(message, level) {
         this.log(level, message, (message) => colors_1.default.red(message));
     }
-    debug(...data) {
-        console.log(...data);
+    inspect(data) {
+        console.log(util_1.default.inspect(data, { depth: 10, colors: true, maxArrayLength: 5 }));
     }
 }
 exports.default = Logger;

@@ -11,5 +11,5 @@ export default class Logger extends Component<LoggerSpace.Config> {
     warning(message: LoggerSpace.Message, level?: number): void;
     success(message: LoggerSpace.Message, level?: number): void;
     error(message: LoggerSpace.Message, level?: number): void;
-    debug(...data: any[]): void;
+    inspect(data: any): void;
 }

@@ -67,7 +67,7 @@ export default function createRenderMiddleware(options) {
         try {
             result = yield preload(location, resolveCandidate, helpers);
             verbose && logger.success('Preload request successfully performed', 1);
-            debug && logger.debug(result);
+            debug && logger.inspect(result);
         }
         catch (error) {
             verbose && logger.error(`Preload request failed: ${error.message}`, 1);

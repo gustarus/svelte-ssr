@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "svelte-ssr",
-  "version": "0.0.19",
+  "version": "0.0.20",
   "description": "Tool to setup svelte server side rendering with webpack",
   "main": "./index.js",
   "scripts": {
@@ -61,6 +61,7 @@
     "nodemon": "^2.0.3",
     "path": "^0.12.7",
     "svelte": "^3.20.1",
+    "util": "^0.12.3",
     "yargs": "^15.3.1"
   }
 }
