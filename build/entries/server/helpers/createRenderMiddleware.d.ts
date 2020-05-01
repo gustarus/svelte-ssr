@@ -1,4 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
+import resolveRedirect from './resolveRedirect';
+import resolveResponse from './resolveResponse';
+import RedirectCandidate from '../models/Redirect';
+import ResponseCandidate from '../models/Response';
+import resolveCandidate from './resolveCandidate';
 declare type TSvelteServerSideComponent = {
     render: (props?: {}, options?: {}) => TSvelteServerSideRenderResult;
 };
@@ -10,15 +15,22 @@ declare type TSvelteServerSideRenderResult = {
         map: any;
     };
 };
-declare type TRequestedLocation = {
+declare type TPreloadCallbackLocation = {
+    base: string;
     path: string;
+    inner: string;
     query: {
         [key: string]: any;
     };
 };
-declare type TPreloadCallback = (location: TRequestedLocation) => Promise<{
+declare type TPreloadCallbackHelpers = {
+    redirect: typeof resolveRedirect;
+    response: typeof resolveResponse;
+};
+declare type TPreloadCallbackResult = {
     [key: string]: any;
-}>;
+} | RedirectCandidate | ResponseCandidate;
+declare type TPreloadCallback = (location: TPreloadCallbackLocation, resolve: typeof resolveCandidate, helpers: TPreloadCallbackHelpers) => Promise<TPreloadCallbackResult>;
 declare type TOptions = {
     base: string;
     component: TSvelteServerSideComponent;
@@ -36,5 +48,5 @@ declare type TOptions = {
  *  }
  * @param options
  */
-export default function createRenderMiddleware(options: TOptions): (req: Request, res: Response, next: NextFunction) => void;
+export default function createRenderMiddleware(options: TOptions): (req: Request, res: Response, next: NextFunction) => Promise<any>;
 export {};

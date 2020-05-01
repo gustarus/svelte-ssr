@@ -1,12 +1,12 @@
-import fs from 'fs';
+import colors from 'colors';
 import { NextFunction, Request, Response } from 'express';
-import parser, { HTMLElement } from 'node-html-parser';
-
-type TTemplateRepresentative = {
-  dom: HTMLElement;
-  head: HTMLElement;
-  target: HTMLElement;
-}
+import resolveTemplateRepresentative from './resolveTemplateRepresentative';
+import resolveNormalizedPath from '../../../helpers/resolveNormalizedPath';
+import resolveRedirect from './resolveRedirect';
+import resolveResponse from './resolveResponse';
+import RedirectCandidate from '../models/Redirect';
+import ResponseCandidate from '../models/Response';
+import resolveCandidate from './resolveCandidate';
 
 type TSvelteServerSideComponent = {
   render: (props?: {}, options?: {}) => TSvelteServerSideRenderResult;
@@ -21,9 +21,13 @@ type TSvelteServerSideRenderResult = {
   };
 }
 
-type TRequestedLocation = { path: string, query: { [key: string]: any } };
+type TPreloadCallbackLocation = { base: string; path: string; inner: string; query: { [key: string]: any } };
 
-type TPreloadCallback = (location: TRequestedLocation) => Promise<{ [key: string]: any }>;
+type TPreloadCallbackHelpers = { redirect: typeof resolveRedirect; response: typeof resolveResponse };
+
+type TPreloadCallbackResult = { [key: string]: any } | RedirectCandidate | ResponseCandidate;
+
+type TPreloadCallback = (location: TPreloadCallbackLocation, resolve: typeof resolveCandidate, helpers: TPreloadCallbackHelpers) => Promise<TPreloadCallbackResult>;
 
 type TOptions = {
   base: string;
@@ -32,10 +36,6 @@ type TOptions = {
   pathToTemplate: string,
   targetSelector: string;
 };
-
-type TRedirectOptions = { status?: number };
-
-const defaultRedirectOptions = { status: 302 };
 
 /**
  * Create middleware to render application from template with desired options.
@@ -47,9 +47,21 @@ const defaultRedirectOptions = { status: 302 };
  *  }
  * @param options
  */
-export default function createRenderMiddleware(options: TOptions): (req: Request, res: Response, next: NextFunction) => void {
-  const { base, component, pathToTemplate, targetSelector } = options;
+export default function createRenderMiddleware(options: TOptions): (req: Request, res: Response, next: NextFunction) => Promise<any> {
+  const { component, pathToTemplate, targetSelector } = options;
+  const base = resolveNormalizedPath(options.base);
   const preload = options.preload || (() => Promise.resolve({}));
+
+  // create preload helpers
+  const redirect = resolveRedirect;
+  const response = resolveResponse;
+  const helpers: TPreloadCallbackHelpers = { redirect, response };
+
+  console.log(`Use render middleware to serve server side rendering results from '${base}'`);
+
+  if (!base) {
+    throw new Error('Option \'base\' is required to serve server side rendering results');
+  }
 
   if (!component) {
     throw new Error('Option \'component\' is required for this middleware: please, pass svelte component built for server side rendering');
@@ -64,84 +76,60 @@ export default function createRenderMiddleware(options: TOptions): (req: Request
   }
 
   // save dom nodes to the variables
-  const original: Partial<TTemplateRepresentative> = {};
-  const clone: Partial<TTemplateRepresentative> = {};
+  const { original, clone } = resolveTemplateRepresentative(pathToTemplate, targetSelector);
 
-  /**
-   * Ensure dom and target nodes.
-   * @returns {{ original: {dom: HTMLElement, head: HTMLElement, target: HTMLElement}, clone: {dom: HTMLElement, head: HTMLElement, target: HTMLElement} }}
-   */
-  function resolveTemplateRepresentative(): { original: TTemplateRepresentative; clone: TTemplateRepresentative } {
-    if (!original.dom || !clone.dom) {
-      if (!fs.existsSync(pathToTemplate)) {
-        throw new Error(`Unable to find file for the template: looking for '${pathToTemplate}'`);
-      }
+  return async(req: Request, res: Response, next: NextFunction): Promise<any> => {
+    const path = resolveNormalizedPath(req.path);
+    const inner = resolveNormalizedPath(path.slice(base.length));
+    const query = req.query;
+    const location: TPreloadCallbackLocation = { base, path, inner, query };
 
-      // read the template from the file
-      const template = fs.readFileSync(pathToTemplate).toString();
-
-      // parse template into dom
-      // @ts-ignore
-      original.dom = parser.parse(template) as HTMLElement;
-      // @ts-ignore
-      clone.dom = parser.parse(template) as HTMLElement;
-
-      // resolve head
-      original.head = original.dom.querySelector('head');
-      clone.head = clone.dom.querySelector('head');
-      if (!original.head || !clone.head) {
-        throw new Error('Unable to find head html element inside the template');
-      }
-
-      original.target = original.dom.querySelector(targetSelector);
-      clone.target = clone.dom.querySelector(targetSelector);
-      if (!original.target || !clone.target) {
-        throw new Error('Unable to find target html element inside the template');
-      }
+    // serve render only from desired base
+    if (path.indexOf(base) !== 0) {
+      return next();
     }
 
-    return {
-      original: original as TTemplateRepresentative,
-      clone: clone as TTemplateRepresentative,
-    };
-  }
+    // preload component data
+    let result: TPreloadCallbackResult;
+    try {
+      result = await preload(location, resolveCandidate, helpers);
+    } catch (error) {
+      console.log(colors.red(`Preload error: ${error.message}`));
+      return next(error);
+    }
 
-  /**
-   * Execute server redirect.
-   * @param req
-   * @param res
-   * @param uri
-   * @param customRedirectOptions
-   */
-  function redirect(req: Request, res: Response, uri: string, customRedirectOptions: TRedirectOptions = {}): void {
-    const options = { ...defaultRedirectOptions, ...customRedirectOptions };
-    return res.redirect(options.status, uri);
-  }
+    if (result instanceof RedirectCandidate) {
+      return res.redirect(result.status, result.url);
+    }
 
-  return (req: Request, res: Response): void => {
-    const { path, query } = req;
-    const { original, clone } = resolveTemplateRepresentative();
-    const location = { base, path, query };
+    if (result instanceof ResponseCandidate) {
+      return res.status(result.status).send(result.body);
+    }
 
-    // TODO Match request with base
+    // render component with preloaded data
+    const props = { ...location, ...result };
+    let head;
+    let html;
+    try {
+      const rendered = component.render(props);
+      head = rendered.head;
+      html = rendered.html;
+    } catch (error) {
+      console.log(colors.red(`Render error: ${error.message}`));
+      return next(error);
+    }
 
-    // preload application data
-    preload(location).then((data: { [key: string]: any }) => {
-      // render application with loaded data
-      const props = { ...location, ...data };
-      const { head, html } = component.render(props);
+    // set clone content from original one with rendered one
+    const baseTag = `<base href="${base}" />`;
+    const propsScript = `<script type="text/javascript">window.$$props = ${JSON.stringify(props)};</script>`;
+    clone.head.set_content(`${baseTag}${propsScript}${original.head.innerHTML}${head}`, {
+      script: true,
+      style: true,
+    });
+    clone.target.set_content(html, { script: true, style: true });
 
-      // set clone content from original one with rendered one
-      const baseTag = `<base href="${base}" />`;
-      const propsScript = `<script type="text/javascript">window.$$props = ${JSON.stringify(props)};</script>`;
-      clone.head.set_content(`${baseTag}${propsScript}${original.head.innerHTML}${head}`, {
-        script: true,
-        style: true,
-      });
-      clone.target.set_content(html, { script: true, style: true });
-
-      res.contentType('text/html')
-        .send(clone.dom.toString());
-    }).catch((error: Error) => res.sendStatus(500).send(error));
+    // send rendered result
+    res.contentType('text/html')
+      .send(clone.dom.toString());
   };
 }
