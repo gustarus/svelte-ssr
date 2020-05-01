@@ -1,4 +1,4 @@
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 import path from 'path';
 
 export default function resolvePackagePath(directory: string): string {

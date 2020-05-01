@@ -11,16 +11,16 @@ function displayCommandEnvironment(cmd, server, bundler) {
         displayCommandStep_1.default(cmd, `\tBundler mode: ${colors_1.default.bold(bundler.mode)}`);
     }
     if (server && server.port) {
-        displayCommandStep_1.default(cmd, `\tNode listen to port: ${colors_1.default.bold(server.port)}`);
+        displayCommandStep_1.default(cmd, `\tNode listen to port: ${colors_1.default.bold(server.port.toString())}`);
     }
     if (server && server.base) {
         displayCommandStep_1.default(cmd, `\tNode listen to base directory: ${colors_1.default.bold(server.base)}`);
     }
     if (bundler && bundler.developmentPortClient) {
-        displayCommandStep_1.default(cmd, `\tClient bundler listen to port: ${colors_1.default.bold(bundler.developmentPortClient)}`);
+        displayCommandStep_1.default(cmd, `\tClient bundler listen to port: ${colors_1.default.bold(bundler.developmentPortClient.toString())}`);
     }
     if (bundler && bundler.developmentPortServer) {
-        displayCommandStep_1.default(cmd, `\tServer bundler listen to port: ${colors_1.default.bold(bundler.developmentPortServer)}`);
+        displayCommandStep_1.default(cmd, `\tServer bundler listen to port: ${colors_1.default.bold(bundler.developmentPortServer.toString())}`);
     }
     if (bundler && bundler.pathToProject) {
         displayCommandStep_1.default(cmd, `\tPath to project to build: ${colors_1.default.italic(bundler.pathToProject)}`);

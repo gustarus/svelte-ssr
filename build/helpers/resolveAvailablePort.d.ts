@@ -1,4 +1,4 @@
-export default function resolveAvailablePort(port: string): Promise<{
-    requested: string;
-    available: string;
+export default function resolveAvailablePort(port: string | number): Promise<{
+    requested: number;
+    available: number;
 }>;

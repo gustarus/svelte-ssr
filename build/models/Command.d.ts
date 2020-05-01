@@ -8,7 +8,7 @@ export declare namespace CommandSpace {
     type Runtime = {
         wrap?: boolean;
     };
-    type Part = Command | string | boolean | undefined | {
+    type Part = Command | string | number | boolean | undefined | {
         [key: string]: Part;
     };
 }

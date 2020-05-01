@@ -10,13 +10,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import colors from 'colors';
 import displayCommandStep from './displayCommandStep';
 import resolveAvailablePort from './resolveAvailablePort';
-import { DEFAULT_PORT_CLIENT, DEFAULT_PORT_NODE, DEFAULT_PORT_SERVER } from '../constants';
+import { DEFAULT_CLIENT_PORT, DEFAULT_LISTEN_PORT, DEFAULT_SERVER_PORT } from '../constants';
 export default function resolveCommandPorts(cmd) {
     return __awaiter(this, void 0, void 0, function* () {
         displayCommandStep(cmd, colors.yellow('Resolve available server port to launch the tool...'));
-        const nodePort = yield resolveAvailablePort(cmd.nodePort || DEFAULT_PORT_NODE);
-        const clientPort = yield resolveAvailablePort(cmd.clientPort || DEFAULT_PORT_CLIENT);
-        const serverPort = yield resolveAvailablePort(cmd.serverPort || DEFAULT_PORT_SERVER);
+        const nodePort = yield resolveAvailablePort(cmd.nodePort || DEFAULT_LISTEN_PORT);
+        const clientPort = yield resolveAvailablePort(cmd.clientPort || DEFAULT_CLIENT_PORT);
+        const serverPort = yield resolveAvailablePort(cmd.serverPort || DEFAULT_SERVER_PORT);
         return {
             node: nodePort.available,
             client: clientPort.available,

@@ -1,2 +1,2 @@
-import renderClient from "./build/helpers/renderClient";
+import renderClient from "./build/entries/client/helpers/renderClient";
 export { renderClient };

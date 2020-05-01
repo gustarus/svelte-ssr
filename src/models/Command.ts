@@ -11,7 +11,7 @@ export namespace CommandSpace {
     wrap?: boolean;
   }
 
-  export type Part = Command | string | boolean | undefined | { [key: string]: Part };
+  export type Part = Command | string | number | boolean | undefined | { [key: string]: Part };
 }
 
 export default class Command<C = {}> extends Component<C & CommandSpace.Config> {

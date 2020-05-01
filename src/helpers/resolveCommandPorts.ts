@@ -2,13 +2,13 @@ import colors from 'colors';
 import displayCommandStep from './displayCommandStep';
 import resolveAvailablePort from './resolveAvailablePort';
 import { TDefaultCommand } from '../types/TDefaultCommand';
-import { DEFAULT_PORT_CLIENT, DEFAULT_PORT_NODE, DEFAULT_PORT_SERVER } from '../constants';
+import { DEFAULT_CLIENT_PORT, DEFAULT_LISTEN_PORT, DEFAULT_SERVER_PORT } from '../constants';
 
-export default async function resolveCommandPorts(cmd: TDefaultCommand): Promise<{ node: string; client: string; server: string }> {
+export default async function resolveCommandPorts(cmd: TDefaultCommand): Promise<{ node: number; client: number; server: number }> {
   displayCommandStep(cmd, colors.yellow('Resolve available server port to launch the tool...'));
-  const nodePort = await resolveAvailablePort(cmd.nodePort || DEFAULT_PORT_NODE);
-  const clientPort = await resolveAvailablePort(cmd.clientPort || DEFAULT_PORT_CLIENT);
-  const serverPort = await resolveAvailablePort(cmd.serverPort || DEFAULT_PORT_SERVER);
+  const nodePort = await resolveAvailablePort(cmd.nodePort || DEFAULT_LISTEN_PORT);
+  const clientPort = await resolveAvailablePort(cmd.clientPort || DEFAULT_CLIENT_PORT);
+  const serverPort = await resolveAvailablePort(cmd.serverPort || DEFAULT_SERVER_PORT);
 
   return {
     node: nodePort.available,

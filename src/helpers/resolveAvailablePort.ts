@@ -1,6 +1,6 @@
 const detect = require('detect-port');
 
-export default function resolveAvailablePort(port: string): Promise<{ requested: string; available: string }> {
+export default function resolveAvailablePort(port: string | number): Promise<{ requested: number; available: number }> {
   return new Promise((resolve, reject) => {
     detect(port, (error: Error, available: string) => {
       if (error) {
@@ -8,7 +8,10 @@ export default function resolveAvailablePort(port: string): Promise<{ requested:
         return;
       }
 
-      resolve({ requested: port, available });
+      resolve({
+        requested: parseInt(port.toString(), 10),
+        available: parseInt(available, 10),
+      });
     });
   });
 }

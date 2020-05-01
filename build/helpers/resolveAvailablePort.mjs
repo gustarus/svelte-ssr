@@ -6,7 +6,10 @@ export default function resolveAvailablePort(port) {
                 reject(error);
                 return;
             }
-            resolve({ requested: port, available });
+            resolve({
+                requested: parseInt(port.toString(), 10),
+                available: parseInt(available, 10),
+            });
         });
     });
 }

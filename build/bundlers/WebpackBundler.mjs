@@ -1,7 +1,7 @@
 import path from 'path';
-import BaseBundler from './BaseBundler';
+import Bundler from './../models/Bundler';
 import createCommand from '../helpers/createCommand';
-export default class WebpackBundler extends BaseBundler {
+export default class WebpackBundler extends Bundler {
     get defaults() {
         return Object.assign(Object.assign({}, super.defaults), { pathToClientConfig: 'webpack.config.client.js', pathToServerConfig: 'webpack.config.server.js' });
     }

@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
-const BaseBundler_1 = __importDefault(require("./BaseBundler"));
+const Bundler_1 = __importDefault(require("./../models/Bundler"));
 const createCommand_1 = __importDefault(require("../helpers/createCommand"));
-class WebpackBundler extends BaseBundler_1.default {
+class WebpackBundler extends Bundler_1.default {
     get defaults() {
         return Object.assign(Object.assign({}, super.defaults), { pathToClientConfig: 'webpack.config.client.js', pathToServerConfig: 'webpack.config.server.js' });
     }

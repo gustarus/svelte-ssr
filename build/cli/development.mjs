@@ -7,7 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 import path from 'path';
 import colors from 'colors';
 import { PATH_PROJECT, DEFAULT_OPTIONS } from '../constants';

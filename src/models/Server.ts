@@ -7,7 +7,7 @@ import { TBundler } from '../types/TBundler';
 export namespace ServerSpace {
   export type Config = {
     bundler: TBundler;
-    port: string;
+    port: number;
     base: string;
     live: boolean;
     pathToProject: string;
@@ -18,7 +18,7 @@ export default class Server extends Component<ServerSpace.Config> {
 
   public bundler: TBundler;
 
-  public port: string;
+  public port: number;
 
   public base: string;
 

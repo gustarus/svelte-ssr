@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "svelte-ssr",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Tool to setup svelte server side rendering with webpack",
   "main": "./index.js",
   "scripts": {
@@ -9,16 +9,16 @@
     "build": "rm -rf ./build && npm run build:mjs && npm run build:cjs",
     "build:cjs": "npm run build:cjs:core && npm run build:cjs:index && npm run build:cjs:client && npm run build:cjs:server && npm run build:cjs:webpack",
     "build:cjs:core": "./node_modules/.bin/tsc -m commonjs",
-    "build:cjs:index": "node ./build/export.js --source ./build/index.js --target ./index.js",
-    "build:cjs:client": "node ./build/export.js --source ./build/client.js --target ./client.js",
-    "build:cjs:server": "node ./build/export.js --source ./build/server.js --target ./server.js",
-    "build:cjs:webpack": "node ./build/export.js --source ./build/webpack.js --target ./webpack.js",
+    "build:cjs:index": "node ./build/tools/export.js --source ./build/index.js --target ./index.js",
+    "build:cjs:client": "node ./build/tools/export.js --source ./build/entries/client/index.js --target ./client.js",
+    "build:cjs:server": "node ./build/tools/export.js --source ./build/entries/server/index.js --target ./server.js",
+    "build:cjs:webpack": "node ./build/tools/export.js --source ./build/entries/webpack/index.js --target ./webpack.js",
     "build:mjs": "npm run build:mjs:core && npm run build:mjs:index && npm run build:mjs:client && npm run build:mjs:server && npm run build:mjs:webpack",
     "build:mjs:core": "./node_modules/.bin/tsc -m esnext && find ./build -depth -exec rename 's/\\.js/\\.mjs/' {} +",
-    "build:mjs:index": "node --experimental-modules ./build/export.mjs --source ./build/index.mjs --target ./index.mjs",
-    "build:mjs:client": "node --experimental-modules ./build/export.mjs --source ./build/client.mjs --target ./client.mjs",
-    "build:mjs:server": "node --experimental-modules ./build/export.mjs --source ./build/server.mjs --target ./server.mjs",
-    "build:mjs:webpack": "node --experimental-modules ./build/export.mjs --source ./build/webpack.mjs --target ./webpack.mjs"
+    "build:mjs:index": "node --experimental-modules ./build/tools/export.mjs --source ./build/index.mjs --target ./index.mjs",
+    "build:mjs:client": "node --experimental-modules ./build/tools/export.mjs --source ./build/entries/client/index.mjs --target ./client.mjs",
+    "build:mjs:server": "node --experimental-modules ./build/tools/export.mjs --source ./build/entries/server/index.mjs --target ./server.mjs",
+    "build:mjs:webpack": "node --experimental-modules ./build/tools/export.mjs --source ./build/entries/webpack/index.mjs --target ./webpack.mjs"
   },
   "repository": {
     "type": "git",

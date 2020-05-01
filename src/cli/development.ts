@@ -1,10 +1,9 @@
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 import path from 'path';
 import colors from 'colors';
-import { PATH_ROOT, PATH_PROJECT, DEFAULT_OPTIONS } from '../constants';
+import { PATH_PROJECT, DEFAULT_OPTIONS } from '../constants';
 import concurrently from 'concurrently';
 import { Command } from 'commander';
-import createCommand from '../helpers/createCommand';
 import displayCommandGreetings from '../helpers/displayCommandGreetings';
 import displayCommandStep from '../helpers/displayCommandStep';
 import resolveCommandConfigurations from '../helpers/resolveCommandConfigurations';

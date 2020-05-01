@@ -12,7 +12,7 @@ export default function displayCommandEnvironment(cmd: Command, server?: Server,
   }
 
   if (server && server.port) {
-    displayCommandStep(cmd, `\tNode listen to port: ${colors.bold(server.port)}`);
+    displayCommandStep(cmd, `\tNode listen to port: ${colors.bold(server.port.toString())}`);
   }
 
   if (server && server.base) {
@@ -20,11 +20,11 @@ export default function displayCommandEnvironment(cmd: Command, server?: Server,
   }
 
   if (bundler && bundler.developmentPortClient) {
-    displayCommandStep(cmd, `\tClient bundler listen to port: ${colors.bold(bundler.developmentPortClient)}`);
+    displayCommandStep(cmd, `\tClient bundler listen to port: ${colors.bold(bundler.developmentPortClient.toString())}`);
   }
 
   if (bundler && bundler.developmentPortServer) {
-    displayCommandStep(cmd, `\tServer bundler listen to port: ${colors.bold(bundler.developmentPortServer)}`);
+    displayCommandStep(cmd, `\tServer bundler listen to port: ${colors.bold(bundler.developmentPortServer.toString())}`);
   }
 
   if (bundler && bundler.pathToProject) {

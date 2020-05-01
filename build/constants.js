@@ -8,9 +8,11 @@ exports.PATH_ROOT = resolvePackagePath_1.default(__dirname);
 exports.PATH_PROJECT = resolvePackagePath_1.default(process.cwd());
 exports.ENTRY_CLIENT = 'client';
 exports.ENTRY_SERVER = 'server';
-exports.DEFAULT_PORT_NODE = '3000';
-exports.DEFAULT_PORT_CLIENT = '8080';
-exports.DEFAULT_PORT_SERVER = '8081';
+exports.DEFAULT_LISTEN_HOST = 'localhost';
+exports.DEFAULT_LISTEN_PORT = 3000;
+exports.DEFAULT_LISTEN_BASE = '/';
+exports.DEFAULT_CLIENT_PORT = 8080;
+exports.DEFAULT_SERVER_PORT = 8081;
 exports.DEFAULT_OPTIONS = {
     bundler: {
         flag: '-b, --bundler <webpack>',

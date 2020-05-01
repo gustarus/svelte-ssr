@@ -1,5 +1,5 @@
 import path from 'path';
-import BaseBundler, { BaseBundlerSpace } from './BaseBundler';
+import Bundler from './../models/Bundler';
 import Command from '../models/Command';
 import createCommand from '../helpers/createCommand';
 
@@ -7,7 +7,7 @@ export namespace WebpackBundlerSpace {
   export type Config = {};
 }
 
-export default class WebpackBundler extends BaseBundler<WebpackBundlerSpace.Config> {
+export default class WebpackBundler extends Bundler<WebpackBundlerSpace.Config> {
 
   public get defaults(): any {
     return {
@@ -60,7 +60,7 @@ export default class WebpackBundler extends BaseBundler<WebpackBundlerSpace.Conf
     return pathToFileTemplate.replace('[name]', name).replace('[ext]', 'js');
   }
 
-  protected resolveBundlerCommandServer(pathToConfig: string, portToListen?: string): Command {
+  protected resolveBundlerCommandServer(pathToConfig: string, portToListen?: number): Command {
     const options = { mode: this.mode, config: pathToConfig, port: portToListen, base: this.base };
     return createCommand(['node', this.pathToWebpackServerExecutable, options]);
   }
