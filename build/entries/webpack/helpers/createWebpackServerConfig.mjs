@@ -18,7 +18,7 @@ export default function createWebpackServerConfig(source, options = {}) {
     const base = resolveDesiredBase();
     return merge({
         entry: {
-            server: path.resolve(PATH_PROJECT, 'src', 'server.js')
+            server: path.resolve(PATH_PROJECT, 'src', 'server.js'),
         },
         target: 'node',
         node: {
@@ -27,10 +27,10 @@ export default function createWebpackServerConfig(source, options = {}) {
         },
         output: {
             path: path.resolve(PATH_PROJECT, 'build', 'server'),
-            filename: '[name].js'
+            filename: '[name].js',
         },
         optimization: {
-            minimize: false
+            minimize: false,
         },
         devServer: {
             writeToDisk: (pathToFile) => isPathToFileMatches(pathToFile, 'server.js'),
@@ -41,6 +41,6 @@ export default function createWebpackServerConfig(source, options = {}) {
             historyApiFallback: {
                 index: base,
             },
-        }
+        },
     }, source);
 }

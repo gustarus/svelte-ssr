@@ -23,7 +23,7 @@ function createWebpackServerConfig(source, options = {}) {
     const base = resolveDesiredBase_1.default();
     return lodash_merge_1.default({
         entry: {
-            server: path_1.default.resolve(constants_1.PATH_PROJECT, 'src', 'server.js')
+            server: path_1.default.resolve(constants_1.PATH_PROJECT, 'src', 'server.js'),
         },
         target: 'node',
         node: {
@@ -32,10 +32,10 @@ function createWebpackServerConfig(source, options = {}) {
         },
         output: {
             path: path_1.default.resolve(constants_1.PATH_PROJECT, 'build', 'server'),
-            filename: '[name].js'
+            filename: '[name].js',
         },
         optimization: {
-            minimize: false
+            minimize: false,
         },
         devServer: {
             writeToDisk: (pathToFile) => isPathToFileMatches_1.default(pathToFile, 'server.js'),
@@ -46,7 +46,7 @@ function createWebpackServerConfig(source, options = {}) {
             historyApiFallback: {
                 index: base,
             },
-        }
+        },
     }, source);
 }
 exports.default = createWebpackServerConfig;

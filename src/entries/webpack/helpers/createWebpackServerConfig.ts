@@ -22,7 +22,7 @@ export default function createWebpackServerConfig(source: WebpackOptions, option
 
   return merge({
     entry: {
-      server: path.resolve(PATH_PROJECT, 'src', 'server.js')
+      server: path.resolve(PATH_PROJECT, 'src', 'server.js'),
     },
 
     target: 'node',
@@ -34,11 +34,11 @@ export default function createWebpackServerConfig(source: WebpackOptions, option
 
     output: {
       path: path.resolve(PATH_PROJECT, 'build', 'server'),
-      filename: '[name].js'
+      filename: '[name].js',
     },
 
     optimization: {
-      minimize: false
+      minimize: false,
     },
 
     devServer: {
@@ -50,6 +50,6 @@ export default function createWebpackServerConfig(source: WebpackOptions, option
       historyApiFallback: {
         index: base,
       },
-    }
+    },
   }, source);
 }

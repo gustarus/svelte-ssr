@@ -27,6 +27,10 @@ export default function createWebpackClientConfig(source: WebpackOptions, option
 
     target: 'web',
 
+    node: {
+      fs: 'empty',
+    },
+
     output: {
       path: path.resolve(PATH_PROJECT, 'build', 'client'),
       filename: addWebpackProductionHash('[name].js', production),
