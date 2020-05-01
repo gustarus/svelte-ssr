@@ -1,5 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const defaults = {
+    props: {},
+    excludeServerLocation: true,
+};
 /**
  * Create clean express server.
  * {
@@ -8,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * }
  */
 function renderClient(options) {
-    const { component, target, props = {} } = options;
+    const { component, target, props, excludeServerLocation } = Object.assign(Object.assign({}, defaults), options);
     if (!component) {
         throw new Error('Option \'component\' should be passed: please, define svelte component to render inside the target');
     }
@@ -26,6 +30,12 @@ function renderClient(options) {
     for (const name in props) {
         resolved[name] = typeof props[name] !== 'undefined'
             ? props[name] : resolved[name];
+    }
+    if (excludeServerLocation) {
+        // delete props which
+        // must be taken from the frontend
+        delete resolved.path;
+        delete resolved.query;
     }
     // clean target element
     el.innerHTML = '';

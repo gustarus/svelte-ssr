@@ -4,6 +4,18 @@ type TSvelteComponentProps = { [key: string]: any };
 
 type TWindowWithProps = Window & { $$props?: TSvelteComponentProps };
 
+type TRenderOptions = {
+  component: SvelteComponent;
+  target: string;
+  props?: TSvelteComponentProps;
+  excludeServerLocation?: boolean;
+};
+
+const defaults: Partial<TRenderOptions> = {
+  props: {},
+  excludeServerLocation: true,
+};
+
 /**
  * Create clean express server.
  * {
@@ -11,8 +23,8 @@ type TWindowWithProps = Window & { $$props?: TSvelteComponentProps };
  *   target: html selector to render component inside,
  * }
  */
-export default function renderClient(options: { component: SvelteComponent, target: string, props?: TSvelteComponentProps }) {
-  const { component, target, props = {} } = options;
+export default function renderClient(options: TRenderOptions) {
+  const { component, target, props, excludeServerLocation } = { ...defaults, ...options };
 
   if (!component) {
     throw new Error('Option \'component\' should be passed: please, define svelte component to render inside the target');
@@ -35,6 +47,13 @@ export default function renderClient(options: { component: SvelteComponent, targ
   for (const name in props) {
     resolved[name] = typeof props[name] !== 'undefined'
       ? props[name] : resolved[name];
+  }
+
+  if (excludeServerLocation) {
+    // delete props which
+    // must be taken from the frontend
+    delete resolved.path;
+    delete resolved.query;
   }
 
   // clean target element

@@ -2,6 +2,12 @@ import { SvelteComponent } from 'svelte/internal';
 declare type TSvelteComponentProps = {
     [key: string]: any;
 };
+declare type TRenderOptions = {
+    component: SvelteComponent;
+    target: string;
+    props?: TSvelteComponentProps;
+    excludeServerLocation?: boolean;
+};
 /**
  * Create clean express server.
  * {
@@ -9,9 +15,5 @@ declare type TSvelteComponentProps = {
  *   target: html selector to render component inside,
  * }
  */
-export default function renderClient(options: {
-    component: SvelteComponent;
-    target: string;
-    props?: TSvelteComponentProps;
-}): void;
+export default function renderClient(options: TRenderOptions): void;
 export {};
