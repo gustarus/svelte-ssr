@@ -247,7 +247,7 @@ module.exports = (_, { mode }) => {
 };
 ```
 
-**6. Add the following scripts tou your `package.json` file**
+**6. Add the following scripts to your `package.json` file**
 ```json
 {
   "scripts": {
