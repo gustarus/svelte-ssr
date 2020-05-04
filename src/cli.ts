@@ -15,7 +15,7 @@ const that = new Package({ path: pathToPackage });
 // display description
 program
   .version(that.version)
-  .description('Tool to generate svelte documentation');
+  .description('Tool to launch server side rendering service');
 
 // bind commands
 build(program);

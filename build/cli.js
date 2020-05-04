@@ -17,7 +17,7 @@ const that = new Package_1.default({ path: pathToPackage });
 // display description
 commander_1.default
     .version(that.version)
-    .description('Tool to generate svelte documentation');
+    .description('Tool to launch server side rendering service');
 // bind commands
 build_1.default(commander_1.default);
 development_1.default(commander_1.default);
