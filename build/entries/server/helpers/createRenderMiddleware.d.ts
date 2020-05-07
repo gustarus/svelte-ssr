@@ -41,6 +41,7 @@ declare type TOptions = {
     preload?: TPreloadCallback;
     pathToTemplate: string;
     targetSelector: string;
+    removeWhitespace?: boolean;
     verbose?: boolean;
     debug?: boolean;
 };

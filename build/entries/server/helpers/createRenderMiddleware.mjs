@@ -32,6 +32,7 @@ export default function createRenderMiddleware(options) {
     const componentProps = options.componentProps || {};
     const base = resolveNormalizedPath(options.base);
     const preload = options.preload || (() => Promise.resolve({}));
+    const removeWhitespace = typeof options.removeWhitespace !== 'undefined' ? options.removeWhitespace : false;
     const verbose = typeof options.verbose !== 'undefined' ? options.verbose : false;
     const debug = typeof options.debug !== 'undefined' ? options.debug : false;
     // create preload helpers
@@ -53,6 +54,9 @@ export default function createRenderMiddleware(options) {
     }
     // save dom nodes to the variables
     const { original, clone } = resolveTemplateRepresentative(pathToTemplate, targetSelector);
+    // remove whitespaces in initial representatives
+    removeWhitespace && original.dom.removeWhitespace();
+    removeWhitespace && clone.dom.removeWhitespace();
     return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         const path = resolveNormalizedPath(req.path);
         const inner = resolveNormalizedPath(path.slice(base.length));
@@ -123,6 +127,10 @@ export default function createRenderMiddleware(options) {
             style: true,
         });
         clone.target.set_content(html, { script: true, style: true });
+        // remove whitespaces in clone representative
+        // do it only with changed nodes to reduce memory usage
+        clone.head.removeWhitespace();
+        clone.target.removeWhitespace();
         // send rendered result
         verbose && logger.success('Render successfully performed', 1);
         res.contentType('text/html')

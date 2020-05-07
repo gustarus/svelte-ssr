@@ -40,6 +40,7 @@ type TOptions = {
   preload?: TPreloadCallback,
   pathToTemplate: string,
   targetSelector: string;
+  removeWhitespace?: boolean;
   verbose?: boolean;
   debug?: boolean;
 };
@@ -59,6 +60,7 @@ export default function createRenderMiddleware(options: TOptions): (req: Request
   const componentProps = options.componentProps || {};
   const base = resolveNormalizedPath(options.base);
   const preload = options.preload || (() => Promise.resolve({}));
+  const removeWhitespace = typeof options.removeWhitespace !== 'undefined' ? options.removeWhitespace : false;
   const verbose = typeof options.verbose !== 'undefined' ? options.verbose : false;
   const debug = typeof options.debug !== 'undefined' ? options.debug : false;
 
@@ -87,6 +89,10 @@ export default function createRenderMiddleware(options: TOptions): (req: Request
 
   // save dom nodes to the variables
   const { original, clone } = resolveTemplateRepresentative(pathToTemplate, targetSelector);
+
+  // remove whitespaces in initial representatives
+  removeWhitespace && original.dom.removeWhitespace();
+  removeWhitespace && clone.dom.removeWhitespace();
 
   return async(req: Request, res: Response, next: NextFunction): Promise<any> => {
     const path = resolveNormalizedPath(req.path);
@@ -168,6 +174,11 @@ export default function createRenderMiddleware(options: TOptions): (req: Request
       style: true,
     });
     clone.target.set_content(html, { script: true, style: true });
+
+    // remove whitespaces in clone representative
+    // do it only with changed nodes to reduce memory usage
+    clone.head.removeWhitespace();
+    clone.target.removeWhitespace();
 
     // send rendered result
     verbose && logger.success('Render successfully performed', 1);
