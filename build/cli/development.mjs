@@ -10,7 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import fs from 'fs-extra';
 import path from 'path';
 import colors from 'colors';
-import { PATH_PROJECT, DEFAULT_OPTIONS } from '../constants';
+import { DEFAULT_OPTIONS } from '../constants';
 import concurrently from 'concurrently';
 import displayCommandGreetings from '../helpers/displayCommandGreetings';
 import displayCommandStep from '../helpers/displayCommandStep';
@@ -20,6 +20,7 @@ import resolveCommandBundler from '../helpers/resolveCommandBundler';
 import displayCommandEnvironment from '../helpers/displayCommandEnvironment';
 import Server from '../models/Server';
 import resolveCommandBase from '../helpers/resolveCommandBase';
+import resolveCommandPathToProject from '../helpers/resolveCommandPathToProject';
 export default function development(program) {
     program
         .command('development')
@@ -36,12 +37,13 @@ export default function development(program) {
         const base = yield resolveCommandBase(cmd);
         const ports = yield resolveCommandPorts(cmd);
         const Bundler = yield resolveCommandBundler(cmd);
+        const pathToProject = yield resolveCommandPathToProject(cmd);
         const configurations = yield resolveCommandConfigurations(cmd);
         displayCommandStep(cmd, colors.yellow('Create bundler instance with resolved options...'));
         const bundler = new Bundler({
             mode: 'development',
-            base: base,
-            pathToProject: PATH_PROJECT,
+            base,
+            pathToProject,
             pathToClientConfig: configurations.client,
             pathToServerConfig: configurations.server,
             developmentPortClient: ports.client,
@@ -51,9 +53,9 @@ export default function development(program) {
         const server = new Server({
             bundler,
             port: ports.node,
-            base: base,
+            base,
             live: true,
-            pathToProject: PATH_PROJECT,
+            pathToProject,
         });
         // display command environment options
         displayCommandEnvironment(cmd, server, bundler);

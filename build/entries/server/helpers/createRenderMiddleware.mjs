@@ -7,6 +7,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+import aes from 'crypto-js/aes';
 import resolveTemplateRepresentative from './resolveTemplateRepresentative';
 import resolveNormalizedPath from '../../../helpers/resolveNormalizedPath';
 import resolveRedirect from './resolveRedirect';
@@ -17,6 +18,7 @@ import resolveCandidate from './resolveCandidate';
 import logger from '../../../instances/logger';
 import resolveRenderProperties from './resolveRenderProperties';
 import resolveNormalizedUrlWithBase from '../../../helpers/resolveNormalizedUrlWithBase';
+import { DEFAULT_SECRET_SALT } from '../../../constants';
 /**
  * Create middleware to render application from template with desired options.
  * {
@@ -32,6 +34,7 @@ export default function createRenderMiddleware(options) {
     const componentProps = options.componentProps || {};
     const base = resolveNormalizedPath(options.base);
     const preload = options.preload || (() => Promise.resolve({}));
+    const secretSalt = options.secretSalt || DEFAULT_SECRET_SALT;
     const removeWhitespace = typeof options.removeWhitespace !== 'undefined' ? options.removeWhitespace : false;
     const verbose = typeof options.verbose !== 'undefined' ? options.verbose : false;
     const debug = typeof options.debug !== 'undefined' ? options.debug : false;
@@ -119,13 +122,14 @@ export default function createRenderMiddleware(options) {
             verbose && logger.error(`Render failed: '${error.message}'`, 1);
             return next(error);
         }
-        // set clone content from original one with rendered one
+        // create base script tag
         const baseTag = `<base href="${base}" />`;
-        const propsScript = `<script type="text/javascript">window.$$props = ${JSON.stringify(props)};</script>`;
-        clone.head.set_content(`${baseTag}${propsScript}${original.head.innerHTML}${head}`, {
-            script: true,
-            style: true,
-        });
+        // encrypt properties with basic encryption method
+        // because it may store spam bots sensitive data
+        const propsEncrypted = aes.encrypt(JSON.stringify(props), secretSalt).toString();
+        const propsScript = `<script type="text/javascript">window.$$props = ${JSON.stringify(propsEncrypted)};</script>`;
+        // set clone content from original one with rendered one
+        clone.head.set_content(`${baseTag}${propsScript}${original.head.innerHTML}${head}`, { script: true, style: true });
         clone.target.set_content(html, { script: true, style: true });
         // remove whitespaces in clone representative
         // do it only with changed nodes to reduce memory usage

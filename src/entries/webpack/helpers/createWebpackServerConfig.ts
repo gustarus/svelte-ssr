@@ -2,11 +2,15 @@ import path from 'path';
 import yargs from 'yargs';
 import merge from 'lodash.merge';
 import { WebpackOptions } from 'webpack/declarations/WebpackOptions';
-import { PATH_PROJECT } from '../../../constants';
 import isPathToFileMatches from '../../../helpers/isPathToFileMatches';
 import resolveDesiredBase from '../../../helpers/resolveDesiredBase';
+import resolvePathToProject from '../../../helpers/resolvePathToProject';
 
 const argv = yargs.argv;
+const pathToProject = resolvePathToProject() as string;
+if (!pathToProject) {
+  throw new Error('Unable to resolve path to project: does package.json exist in the project folder?');
+}
 
 /**
  * Merge custom webpack config with default ones.
@@ -22,7 +26,7 @@ export default function createWebpackServerConfig(source: WebpackOptions, option
 
   return merge({
     entry: {
-      server: path.resolve(PATH_PROJECT, 'src', 'server.js'),
+      server: path.resolve(pathToProject, 'src', 'server.js'),
     },
 
     target: 'node',
@@ -33,7 +37,7 @@ export default function createWebpackServerConfig(source: WebpackOptions, option
     },
 
     output: {
-      path: path.resolve(PATH_PROJECT, 'build', 'server'),
+      path: path.resolve(pathToProject, 'build', 'server'),
       filename: '[name].js',
     },
 
@@ -43,7 +47,7 @@ export default function createWebpackServerConfig(source: WebpackOptions, option
 
     devServer: {
       writeToDisk: (pathToFile: string) => isPathToFileMatches(pathToFile, 'server.js'),
-      contentBase: path.join(PATH_PROJECT, 'build', 'server'),
+      contentBase: path.join(pathToProject, 'build', 'server'),
       overlay: true,
       compress: true,
       publicPath: base,

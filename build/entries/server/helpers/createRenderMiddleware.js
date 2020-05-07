@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const aes_1 = __importDefault(require("crypto-js/aes"));
 const resolveTemplateRepresentative_1 = __importDefault(require("./resolveTemplateRepresentative"));
 const resolveNormalizedPath_1 = __importDefault(require("../../../helpers/resolveNormalizedPath"));
 const resolveRedirect_1 = __importDefault(require("./resolveRedirect"));
@@ -22,6 +23,7 @@ const resolveCandidate_1 = __importDefault(require("./resolveCandidate"));
 const logger_1 = __importDefault(require("../../../instances/logger"));
 const resolveRenderProperties_1 = __importDefault(require("./resolveRenderProperties"));
 const resolveNormalizedUrlWithBase_1 = __importDefault(require("../../../helpers/resolveNormalizedUrlWithBase"));
+const constants_1 = require("../../../constants");
 /**
  * Create middleware to render application from template with desired options.
  * {
@@ -37,6 +39,7 @@ function createRenderMiddleware(options) {
     const componentProps = options.componentProps || {};
     const base = resolveNormalizedPath_1.default(options.base);
     const preload = options.preload || (() => Promise.resolve({}));
+    const secretSalt = options.secretSalt || constants_1.DEFAULT_SECRET_SALT;
     const removeWhitespace = typeof options.removeWhitespace !== 'undefined' ? options.removeWhitespace : false;
     const verbose = typeof options.verbose !== 'undefined' ? options.verbose : false;
     const debug = typeof options.debug !== 'undefined' ? options.debug : false;
@@ -124,13 +127,14 @@ function createRenderMiddleware(options) {
             verbose && logger_1.default.error(`Render failed: '${error.message}'`, 1);
             return next(error);
         }
-        // set clone content from original one with rendered one
+        // create base script tag
         const baseTag = `<base href="${base}" />`;
-        const propsScript = `<script type="text/javascript">window.$$props = ${JSON.stringify(props)};</script>`;
-        clone.head.set_content(`${baseTag}${propsScript}${original.head.innerHTML}${head}`, {
-            script: true,
-            style: true,
-        });
+        // encrypt properties with basic encryption method
+        // because it may store spam bots sensitive data
+        const propsEncrypted = aes_1.default.encrypt(JSON.stringify(props), secretSalt).toString();
+        const propsScript = `<script type="text/javascript">window.$$props = ${JSON.stringify(propsEncrypted)};</script>`;
+        // set clone content from original one with rendered one
+        clone.head.set_content(`${baseTag}${propsScript}${original.head.innerHTML}${head}`, { script: true, style: true });
         clone.target.set_content(html, { script: true, style: true });
         // remove whitespaces in clone representative
         // do it only with changed nodes to reduce memory usage

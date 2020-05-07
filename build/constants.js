@@ -1,11 +1,5 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const resolvePackagePath_1 = __importDefault(require("./helpers/resolvePackagePath"));
-exports.PATH_ROOT = resolvePackagePath_1.default(__dirname);
-exports.PATH_PROJECT = resolvePackagePath_1.default(process.cwd());
 exports.ENTRY_CLIENT = 'client';
 exports.ENTRY_SERVER = 'server';
 exports.DEFAULT_LISTEN_PORT = 3000;
@@ -14,6 +8,7 @@ exports.DEFAULT_REDIRECT_URL = '/';
 exports.DEFAULT_REDIRECT_STATUS = 301;
 exports.DEFAULT_CLIENT_PORT = 8080;
 exports.DEFAULT_SERVER_PORT = 8081;
+exports.DEFAULT_SECRET_SALT = '"7-!~9tdMYa=;Ps3';
 exports.DEFAULT_OPTIONS = {
     bundler: {
         flag: '-b, --bundler <webpack>',

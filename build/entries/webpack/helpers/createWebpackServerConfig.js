@@ -6,10 +6,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const path_1 = __importDefault(require("path"));
 const yargs_1 = __importDefault(require("yargs"));
 const lodash_merge_1 = __importDefault(require("lodash.merge"));
-const constants_1 = require("../../../constants");
 const isPathToFileMatches_1 = __importDefault(require("../../../helpers/isPathToFileMatches"));
 const resolveDesiredBase_1 = __importDefault(require("../../../helpers/resolveDesiredBase"));
+const resolvePathToProject_1 = __importDefault(require("../../../helpers/resolvePathToProject"));
 const argv = yargs_1.default.argv;
+const pathToProject = resolvePathToProject_1.default();
+if (!pathToProject) {
+    throw new Error('Unable to resolve path to project: does package.json exist in the project folder?');
+}
 /**
  * Merge custom webpack config with default ones.
  * @param source - webpack client options
@@ -23,7 +27,7 @@ function createWebpackServerConfig(source, options = {}) {
     const base = resolveDesiredBase_1.default();
     return lodash_merge_1.default({
         entry: {
-            server: path_1.default.resolve(constants_1.PATH_PROJECT, 'src', 'server.js'),
+            server: path_1.default.resolve(pathToProject, 'src', 'server.js'),
         },
         target: 'node',
         node: {
@@ -31,7 +35,7 @@ function createWebpackServerConfig(source, options = {}) {
             __filename: true,
         },
         output: {
-            path: path_1.default.resolve(constants_1.PATH_PROJECT, 'build', 'server'),
+            path: path_1.default.resolve(pathToProject, 'build', 'server'),
             filename: '[name].js',
         },
         optimization: {
@@ -39,7 +43,7 @@ function createWebpackServerConfig(source, options = {}) {
         },
         devServer: {
             writeToDisk: (pathToFile) => isPathToFileMatches_1.default(pathToFile, 'server.js'),
-            contentBase: path_1.default.join(constants_1.PATH_PROJECT, 'build', 'server'),
+            contentBase: path_1.default.join(pathToProject, 'build', 'server'),
             overlay: true,
             compress: true,
             publicPath: base,

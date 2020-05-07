@@ -1,16 +1,15 @@
 import colors from 'colors';
-import { PATH_PROJECT, DEFAULT_OPTIONS } from '../constants';
+import { DEFAULT_OPTIONS } from '../constants';
 import { Command } from 'commander';
 import displayCommandGreetings from '../helpers/displayCommandGreetings';
 import displayCommandStep from '../helpers/displayCommandStep';
 import { TDefaultCommand } from '../types/TDefaultCommand';
 import resolveCommandBundler from '../helpers/resolveCommandBundler';
-import resolveCommandPorts from '../helpers/resolveCommandPorts';
 import resolveCommandConfigurations from '../helpers/resolveCommandConfigurations';
-import Server from '../models/Server';
 import displayCommandEnvironment from '../helpers/displayCommandEnvironment';
 import execSyncProgressDisplay from '../helpers/execSyncProgressDisplay';
 import displayCommandDone from '../helpers/displayCommandDone';
+import resolveCommandPathToProject from '../helpers/resolveCommandPathToProject';
 
 export default function development(program: Command) {
   program
@@ -22,12 +21,13 @@ export default function development(program: Command) {
     .action(async(cmd: TDefaultCommand) => {
       displayCommandGreetings(cmd);
       const Bundler = await resolveCommandBundler(cmd);
+      const pathToProject = await resolveCommandPathToProject(cmd);
       const configurations = await resolveCommandConfigurations(cmd);
 
       displayCommandStep(cmd, colors.yellow('Create bundler instance with resolved options...'));
       const bundler = new Bundler({
         mode: 'production',
-        pathToProject: PATH_PROJECT,
+        pathToProject,
         pathToClientConfig: configurations.client,
         pathToServerConfig: configurations.server,
       });

@@ -6,10 +6,15 @@ import program from 'commander';
 import build from './cli/build';
 import development from './cli/development';
 import production from './cli/production';
-import { PATH_ROOT } from './constants';
 import Package from './models/Package';
+import resolvePathToRoot from './helpers/resolvePathToRoot';
 
-const pathToPackage = path.resolve(PATH_ROOT, 'package.json');
+const pathToRoot = resolvePathToRoot();
+if (!pathToRoot) {
+  throw new Error('Unable to resolve path to root: try to reinstall the package');
+}
+
+const pathToPackage = path.resolve(pathToRoot, 'package.json');
 const that = new Package({ path: pathToPackage });
 
 // display description

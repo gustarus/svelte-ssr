@@ -21,6 +21,7 @@ const resolveCommandConfigurations_1 = __importDefault(require("../helpers/resol
 const displayCommandEnvironment_1 = __importDefault(require("../helpers/displayCommandEnvironment"));
 const execSyncProgressDisplay_1 = __importDefault(require("../helpers/execSyncProgressDisplay"));
 const displayCommandDone_1 = __importDefault(require("../helpers/displayCommandDone"));
+const resolveCommandPathToProject_1 = __importDefault(require("../helpers/resolveCommandPathToProject"));
 function development(program) {
     program
         .command('build')
@@ -31,11 +32,12 @@ function development(program) {
         .action((cmd) => __awaiter(this, void 0, void 0, function* () {
         displayCommandGreetings_1.default(cmd);
         const Bundler = yield resolveCommandBundler_1.default(cmd);
+        const pathToProject = yield resolveCommandPathToProject_1.default(cmd);
         const configurations = yield resolveCommandConfigurations_1.default(cmd);
         displayCommandStep_1.default(cmd, colors_1.default.yellow('Create bundler instance with resolved options...'));
         const bundler = new Bundler({
             mode: 'production',
-            pathToProject: constants_1.PATH_PROJECT,
+            pathToProject,
             pathToClientConfig: configurations.client,
             pathToServerConfig: configurations.server,
         });

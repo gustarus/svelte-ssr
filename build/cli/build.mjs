@@ -8,7 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import colors from 'colors';
-import { PATH_PROJECT, DEFAULT_OPTIONS } from '../constants';
+import { DEFAULT_OPTIONS } from '../constants';
 import displayCommandGreetings from '../helpers/displayCommandGreetings';
 import displayCommandStep from '../helpers/displayCommandStep';
 import resolveCommandBundler from '../helpers/resolveCommandBundler';
@@ -16,6 +16,7 @@ import resolveCommandConfigurations from '../helpers/resolveCommandConfiguration
 import displayCommandEnvironment from '../helpers/displayCommandEnvironment';
 import execSyncProgressDisplay from '../helpers/execSyncProgressDisplay';
 import displayCommandDone from '../helpers/displayCommandDone';
+import resolveCommandPathToProject from '../helpers/resolveCommandPathToProject';
 export default function development(program) {
     program
         .command('build')
@@ -26,11 +27,12 @@ export default function development(program) {
         .action((cmd) => __awaiter(this, void 0, void 0, function* () {
         displayCommandGreetings(cmd);
         const Bundler = yield resolveCommandBundler(cmd);
+        const pathToProject = yield resolveCommandPathToProject(cmd);
         const configurations = yield resolveCommandConfigurations(cmd);
         displayCommandStep(cmd, colors.yellow('Create bundler instance with resolved options...'));
         const bundler = new Bundler({
             mode: 'production',
-            pathToProject: PATH_PROJECT,
+            pathToProject,
             pathToClientConfig: configurations.client,
             pathToServerConfig: configurations.server,
         });

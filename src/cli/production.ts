@@ -1,5 +1,5 @@
 import colors from 'colors';
-import { PATH_PROJECT, DEFAULT_OPTIONS } from '../constants';
+import { DEFAULT_OPTIONS } from '../constants';
 import { Command } from 'commander';
 import displayCommandGreetings from '../helpers/displayCommandGreetings';
 import displayCommandStep from '../helpers/displayCommandStep';
@@ -11,6 +11,7 @@ import Server from '../models/Server';
 import displayCommandEnvironment from '../helpers/displayCommandEnvironment';
 import execSyncProgressDisplay from '../helpers/execSyncProgressDisplay';
 import resolveCommandBase from '../helpers/resolveCommandBase';
+import resolveCommandPathToProject from '../helpers/resolveCommandPathToProject';
 
 export default function development(program: Command) {
   program
@@ -26,13 +27,14 @@ export default function development(program: Command) {
       const base = await resolveCommandBase(cmd);
       const ports = await resolveCommandPorts(cmd);
       const Bundler = await resolveCommandBundler(cmd);
+      const pathToProject = await resolveCommandPathToProject(cmd);
       const configurations = await resolveCommandConfigurations(cmd);
 
       displayCommandStep(cmd, colors.yellow('Create bundler instance with resolved options...'));
       const bundler = new Bundler({
         mode: 'production',
-        base: base,
-        pathToProject: PATH_PROJECT,
+        base,
+        pathToProject,
         pathToClientConfig: configurations.client,
         pathToServerConfig: configurations.server,
       });
@@ -41,9 +43,9 @@ export default function development(program: Command) {
       const server = new Server({
         bundler,
         port: ports.node,
-        base: base,
+        base,
         live: false,
-        pathToProject: PATH_PROJECT,
+        pathToProject,
       });
 
       // display command environment options

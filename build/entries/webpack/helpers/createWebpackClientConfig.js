@@ -7,10 +7,14 @@ const path_1 = __importDefault(require("path"));
 const yargs_1 = __importDefault(require("yargs"));
 const lodash_merge_1 = __importDefault(require("lodash.merge"));
 const addWebpackProductionHash_1 = __importDefault(require("./addWebpackProductionHash"));
-const constants_1 = require("../../../constants");
 const isPathToFileMatches_1 = __importDefault(require("../../../helpers/isPathToFileMatches"));
 const resolveDesiredBase_1 = __importDefault(require("../../../helpers/resolveDesiredBase"));
+const resolvePathToProject_1 = __importDefault(require("../../../helpers/resolvePathToProject"));
 const argv = yargs_1.default.argv;
+const pathToProject = resolvePathToProject_1.default();
+if (!pathToProject) {
+    throw new Error('Unable to resolve path to project: does package.json exist in the project folder?');
+}
 /**
  * Merge custom webpack config with default ones.
  * @param source - webpack client options
@@ -23,7 +27,7 @@ function createWebpackClientConfig(source, options = {}) {
     const base = resolveDesiredBase_1.default();
     return lodash_merge_1.default({
         entry: {
-            client: path_1.default.resolve(constants_1.PATH_PROJECT, 'src', 'client.js'),
+            client: path_1.default.resolve(pathToProject, 'src', 'client.js'),
         },
         target: 'web',
         node: {
@@ -31,13 +35,13 @@ function createWebpackClientConfig(source, options = {}) {
             path: 'empty',
         },
         output: {
-            path: path_1.default.resolve(constants_1.PATH_PROJECT, 'build', 'client'),
+            path: path_1.default.resolve(pathToProject, 'build', 'client'),
             filename: addWebpackProductionHash_1.default('[name].js', production),
             sourceMapFilename: addWebpackProductionHash_1.default('[name].map', production),
         },
         devServer: {
             writeToDisk: (pathToFile) => isPathToFileMatches_1.default(pathToFile, template),
-            contentBase: path_1.default.join(constants_1.PATH_PROJECT, 'build', 'client'),
+            contentBase: path_1.default.join(pathToProject, 'build', 'client'),
             overlay: true,
             compress: true,
             publicPath: base,

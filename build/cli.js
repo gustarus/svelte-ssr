@@ -10,9 +10,13 @@ const commander_1 = __importDefault(require("commander"));
 const build_1 = __importDefault(require("./cli/build"));
 const development_1 = __importDefault(require("./cli/development"));
 const production_1 = __importDefault(require("./cli/production"));
-const constants_1 = require("./constants");
 const Package_1 = __importDefault(require("./models/Package"));
-const pathToPackage = path_1.default.resolve(constants_1.PATH_ROOT, 'package.json');
+const resolvePathToRoot_1 = __importDefault(require("./helpers/resolvePathToRoot"));
+const pathToRoot = resolvePathToRoot_1.default();
+if (!pathToRoot) {
+    throw new Error('Unable to resolve path to root: try to reinstall the package');
+}
+const pathToPackage = path_1.default.resolve(pathToRoot, 'package.json');
 const that = new Package_1.default({ path: pathToPackage });
 // display description
 commander_1.default

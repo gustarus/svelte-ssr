@@ -25,6 +25,7 @@ const resolveCommandBundler_1 = __importDefault(require("../helpers/resolveComma
 const displayCommandEnvironment_1 = __importDefault(require("../helpers/displayCommandEnvironment"));
 const Server_1 = __importDefault(require("../models/Server"));
 const resolveCommandBase_1 = __importDefault(require("../helpers/resolveCommandBase"));
+const resolveCommandPathToProject_1 = __importDefault(require("../helpers/resolveCommandPathToProject"));
 function development(program) {
     program
         .command('development')
@@ -41,12 +42,13 @@ function development(program) {
         const base = yield resolveCommandBase_1.default(cmd);
         const ports = yield resolveCommandPorts_1.default(cmd);
         const Bundler = yield resolveCommandBundler_1.default(cmd);
+        const pathToProject = yield resolveCommandPathToProject_1.default(cmd);
         const configurations = yield resolveCommandConfigurations_1.default(cmd);
         displayCommandStep_1.default(cmd, colors_1.default.yellow('Create bundler instance with resolved options...'));
         const bundler = new Bundler({
             mode: 'development',
-            base: base,
-            pathToProject: constants_1.PATH_PROJECT,
+            base,
+            pathToProject,
             pathToClientConfig: configurations.client,
             pathToServerConfig: configurations.server,
             developmentPortClient: ports.client,
@@ -56,9 +58,9 @@ function development(program) {
         const server = new Server_1.default({
             bundler,
             port: ports.node,
-            base: base,
+            base,
             live: true,
-            pathToProject: constants_1.PATH_PROJECT,
+            pathToProject,
         });
         // display command environment options
         displayCommandEnvironment_1.default(cmd, server, bundler);

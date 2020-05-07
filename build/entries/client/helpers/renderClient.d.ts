@@ -5,8 +5,9 @@ declare type TSvelteComponentProps = {
 declare type TRenderOptions = {
     component: SvelteComponent;
     target: string;
+    secretSalt?: string;
     props?: TSvelteComponentProps;
-    excludeServerLocation?: boolean;
+    includeServerLocation?: boolean;
 };
 /**
  * Create clean express server.

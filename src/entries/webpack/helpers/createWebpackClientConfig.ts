@@ -3,11 +3,15 @@ import yargs from 'yargs';
 import merge from 'lodash.merge';
 import { WebpackOptions } from 'webpack/declarations/WebpackOptions';
 import addWebpackProductionHash from './addWebpackProductionHash';
-import { PATH_PROJECT } from '../../../constants';
 import isPathToFileMatches from '../../../helpers/isPathToFileMatches';
 import resolveDesiredBase from '../../../helpers/resolveDesiredBase';
+import resolvePathToProject from '../../../helpers/resolvePathToProject';
 
 const argv = yargs.argv;
+const pathToProject = resolvePathToProject() as string;
+if (!pathToProject) {
+  throw new Error('Unable to resolve path to project: does package.json exist in the project folder?');
+}
 
 /**
  * Merge custom webpack config with default ones.
@@ -22,7 +26,7 @@ export default function createWebpackClientConfig(source: WebpackOptions, option
 
   return merge({
     entry: {
-      client: path.resolve(PATH_PROJECT, 'src', 'client.js'),
+      client: path.resolve(pathToProject, 'src', 'client.js'),
     },
 
     target: 'web',
@@ -33,14 +37,14 @@ export default function createWebpackClientConfig(source: WebpackOptions, option
     },
 
     output: {
-      path: path.resolve(PATH_PROJECT, 'build', 'client'),
+      path: path.resolve(pathToProject, 'build', 'client'),
       filename: addWebpackProductionHash('[name].js', production),
       sourceMapFilename: addWebpackProductionHash('[name].map', production),
     },
 
     devServer: {
       writeToDisk: (pathToFile: string) => isPathToFileMatches(pathToFile, template),
-      contentBase: path.join(PATH_PROJECT, 'build', 'client'),
+      contentBase: path.join(pathToProject, 'build', 'client'),
       overlay: true,
       compress: true,
       publicPath: base,
