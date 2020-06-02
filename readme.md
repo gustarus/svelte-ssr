@@ -87,10 +87,12 @@ npm install --save svelte-ssr
 ```javascript
 import path from 'path';
 import {
+  cleanServerInstanceOnExit,
   createCatchMiddleware,
   createRedirectMiddleware,
   createRenderMiddleware,
   createServer,
+  createServerInstance,
   createStaticMiddleware,
   resolveCommandOptions
 } from 'svelte-ssr/server';
@@ -127,8 +129,9 @@ app.use(createRedirectMiddleware({ base, verbose: true }));
 // log into console all errors
 app.use(createCatchMiddleware({ verbose: true }));
 
-// listen desired port by the server
-app.listen(port, () => console.log(`Server is ready on ':${port}'`));
+// listen desired port by the server and clean server instance on node application exit event
+const instance = createServerInstance(app, port, () => console.log(`Server is ready on ':${port}'`));
+cleanServerInstanceOnExit(instance);
 ```
 
 **4. Create `client.js` file inside `src` folder**
