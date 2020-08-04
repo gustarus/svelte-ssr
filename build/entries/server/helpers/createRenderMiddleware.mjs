@@ -110,27 +110,37 @@ export default function createRenderMiddleware(options) {
             const strings = conflicts.result.map((name) => `'${name}'`);
             verbose && logger.warning(`Component properties conflict detected: properties from preload result ${strings.join(', ')} will be overridden`, 1);
         }
+        // build collection of document components
+        // to return with the response
+        const headComponents = [];
+        const bodyComponents = [];
+        // override base script tag with expected one
+        const baseSource = `<base href="${base}" />`;
+        const baseElFound = original.head.querySelector('base');
+        baseElFound && (baseElFound.parentNode.removeChild(baseElFound));
+        headComponents.push(baseSource);
+        // encrypt properties with basic encryption method
+        // because it may store spam bots sensitive data
+        // and append them to the components collection
+        const propsEncrypted = aes.encrypt(JSON.stringify(props), secretSalt).toString();
+        const propsScript = `<script type="text/javascript">window.$$props = ${JSON.stringify(propsEncrypted)};</script>`;
+        headComponents.push(propsScript);
+        // append template head html source code
+        headComponents.push(original.head.innerHTML);
         // render component with preloaded data
-        let head;
-        let html;
+        // and append the result to the components collections
         try {
             const rendered = component.render(props);
-            head = rendered.head;
-            html = rendered.html;
+            headComponents.push(rendered.head);
+            bodyComponents.push(rendered.html);
         }
         catch (error) {
             verbose && logger.error(`Render failed: '${error.message}'`, 1);
             return next(error);
         }
-        // create base script tag
-        const baseTag = `<base href="${base}" />`;
-        // encrypt properties with basic encryption method
-        // because it may store spam bots sensitive data
-        const propsEncrypted = aes.encrypt(JSON.stringify(props), secretSalt).toString();
-        const propsScript = `<script type="text/javascript">window.$$props = ${JSON.stringify(propsEncrypted)};</script>`;
         // set clone content from original one with rendered one
-        clone.head.set_content(`${baseTag}${propsScript}${original.head.innerHTML}${head}`, { script: true, style: true });
-        clone.target.set_content(html, { script: true, style: true });
+        clone.head.set_content(headComponents.join(''), { script: true, style: true });
+        clone.target.set_content(bodyComponents.join(''), { script: true, style: true });
         // remove whitespaces in clone representative
         // do it only with changed nodes to reduce memory usage
         clone.head.removeWhitespace();
