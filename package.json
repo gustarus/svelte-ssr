@@ -47,7 +47,7 @@
     "esm": "^3.2.25",
     "http": "0.0.1-security",
     "typescript": "^3.7.5",
-    "webpack": "^4.43.0"
+    "webpack": "^5.75.0"
   },
   "dependencies": {
     "colors": "^1.4.0",
